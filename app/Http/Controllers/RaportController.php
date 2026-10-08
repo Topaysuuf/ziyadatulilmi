@@ -9,8 +9,15 @@ class RaportController extends Controller
 {
     public function show($siswa_id)
     {
-        // Mengambil data siswa beserta nilai & mapel yang di-input guru
-        $siswa = Siswa::with(['nilai.mapel', 'nilais.mapel'])->findOrFail($siswa_id);
+        // Mengambil data siswa
+        $siswa = Siswa::findOrFail($siswa_id);
+
+        // Load relasi nilai jika method-nya ada
+        if (method_exists($siswa, 'nilai')) {
+            $siswa->load('nilai.mapel');
+        } elseif (method_exists($siswa, 'nilais')) {
+            $siswa->load('nilais.mapel');
+        }
 
         return view('raport.show', compact('siswa'));
     }
