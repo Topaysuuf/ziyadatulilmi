@@ -19,6 +19,12 @@
               <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden shadow">
     <img src="{{ asset('images/Logo Pondok.jpeg') }}" alt="Logo Pondok Pesantren Ziyadatul Ilmi" class="w-full h-full object-cover">
 </div>
+<!-- Di dalam header navbar, tambahkan bagian menu mobile/responsive -->
+<div class="flex items-center space-x-2 lg:hidden">
+    <a href="{{ route('absensi') }}" class="bg-yellow-400 text-[#004d25] px-3 py-1 rounded-md text-xs font-bold shadow">Absen</a>
+    <a href="{{ route('nilai') }}" class="bg-yellow-400 text-[#004d25] px-3 py-1 rounded-md text-xs font-bold shadow">Nilai</a>
+    <a href="/login" class="border border-white/70 text-white px-3 py-1 rounded-md text-xs font-semibold">Login</a>
+</div>
                 <div>
                     <h1 class="text-base md:text-lg font-bold uppercase leading-tight tracking-wide">{{ $profil->nama_yayasan ?? 'SMA ZIYADATUL ILMI' }}</h1>
                     <p class="text-xs text-gray-200">NPSN: {{ $profil->nsp ?? '510036730333' }} - SWASTA</p>
@@ -271,11 +277,5 @@
             </div>
         </div>
     </footer>
-<!-- Di dalam header navbar, tambahkan bagian menu mobile/responsive -->
-<div class="flex items-center space-x-2 lg:hidden">
-    <a href="{{ route('absensi') }}" class="bg-yellow-400 text-[#004d25] px-3 py-1 rounded-md text-xs font-bold shadow">Absen</a>
-    <a href="{{ route('nilai') }}" class="bg-yellow-400 text-[#004d25] px-3 py-1 rounded-md text-xs font-bold shadow">Nilai</a>
-    <a href="/login" class="border border-white/70 text-white px-3 py-1 rounded-md text-xs font-semibold">Login</a>
-</div>
 </body>
 </html>
