@@ -10,7 +10,6 @@ use App\Models\Siswa;
 use App\Models\Absensi;
 use App\Models\Nilai;
 
-
 class HomeController extends Controller
 {
     // Halaman Utama / Beranda
@@ -139,7 +138,7 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Berhasil menginput nilai ujian!');
     }
 
-// Export Rekapitulasi Absensi untuk Halaman Publik
+    // Export Rekapitulasi Absensi untuk Halaman Publik
     public function exportAbsensi(Request $request)
     {
         $kelas = $request->input('kelas');
@@ -233,10 +232,11 @@ class HomeController extends Controller
             "Content-Disposition" => "attachment; filename=$fileName",
         ]);
     }
-}
-// Reset / Hapus Seluruh Data Absensi
+
+    // Reset / Hapus Seluruh Data Absensi
     public function resetAbsensi()
     {
         Absensi::truncate();
         return redirect()->back()->with('success', 'Semua riwayat absensi berhasil direset dan dikosongkan!');
     }
+}
