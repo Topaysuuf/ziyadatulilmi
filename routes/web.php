@@ -37,4 +37,7 @@ Route::post('/admin/nilai/store', [HomeController::class, 'storeNilai'])->name('
 
 // 8. Export Rekap Excel (Hanya satu rute per fungsi yang aktif)
 Route::get('/admin/absensi/export', [AbsensiExportController::class, 'exportExcel'])->name('absensi.export');
+Route::get('/admin/nilai/export', [HomeController::class, 'exportNilai'])->name('admin.nilai.export');// 8. Export Rekap Excel
+Route::get('/admin/absensi/export', [AbsensiExportController::class, 'exportExcel'])->name('absensi.export');
+Route::get('/admin/absensi/export-alias', [AbsensiExportController::class, 'exportExcel'])->name('admin.absensi.export'); // Tambahan alias aman
 Route::get('/admin/nilai/export', [HomeController::class, 'exportNilai'])->name('admin.nilai.export');
