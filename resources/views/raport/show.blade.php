@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Raport Digital - {{ $siswa->nama ?? $siswa->nama_siswa ?? 'Siswa' }}</title>
+    <title>E-Raport Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -82,44 +82,27 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($nilais as $index => $item)
-                            @php
-                                $val = $item->nilai_akhir ?? $item->nilai ?? $item->skor ?? 0;
-                                
-                                if ($val >= 85) { 
-                                    $predikat = 'A'; $ket = 'Sangat Baik'; 
-                                } elseif ($val >= 75) { 
-                                    $predikat = 'B'; $ket = 'Baik'; 
-                                } elseif ($val >= 65) { 
-                                    $predikat = 'C'; $ket = 'Cukup'; 
-                                } else { 
-                                    $predikat = 'D'; $ket = 'Perlu Bimbingan'; 
-                                }
-
-                                // Pengecekan nama mapel yang fleksibel dan bebas error dari NULL
-                                $namaMapel = optional($item->mapel)->nama_mapel 
-                                    ?? optional($item->mapel)->mapel 
-                                    ?? $item->mata_pelajaran 
-                                    ?? $item->nama_mapel 
-                                    ?? $item->mapel 
-                                    ?? 'Mata Pelajaran';
-                            @endphp
-                            <tr class="hover:bg-gray-50">
-                                <td class="border border-gray-300 px-3 py-2 text-center">{{ $index + 1 }}</td>
-                                <td class="border border-gray-300 px-4 py-2 font-medium text-gray-800">
-                                    {{ $namaMapel }}
-                                </td>
-                                <td class="border border-gray-300 px-3 py-2 text-center font-bold text-gray-900">{{ $val }}</td>
-                                <td class="border border-gray-300 px-3 py-2 text-center font-semibold">{{ $predikat }}</td>
-                                <td class="border border-gray-300 px-4 py-2 text-center text-gray-700">{{ $ket }}</td>
-                            </tr>
-                        @empty
+                        @if(isset($nilais) && count($nilais) > 0)
+                            @foreach($nilais as $index => $item)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="border border-gray-300 px-3 py-2 text-center">{{ $index + 1 }}</td>
+                                    <td class="border border-gray-300 px-4 py-2 font-medium text-gray-800">
+                                        {{ $item->mata_pelajaran ?? $item->nama_mapel ?? $item->mapel ?? 'Mata Pelajaran' }}
+                                    </td>
+                                    <td class="border border-gray-300 px-3 py-2 text-center font-bold text-gray-900">
+                                        {{ $item->nilai_akhir ?? $item->nilai ?? $item->skor ?? 0 }}
+                                    </td>
+                                    <td class="border border-gray-300 px-3 py-2 text-center font-semibold">-</td>
+                                    <td class="border border-gray-300 px-4 py-2 text-center text-gray-700">-</td>
+                                </tr>
+                            @endforeach
+                        @else
                             <tr>
                                 <td colspan="5" class="border border-gray-300 px-4 py-6 text-center text-gray-500 italic">
                                     Belum ada data nilai yang di-input oleh guru.
                                 </td>
                             </tr>
-                        @endforelse
+                        @endif
                     </tbody>
                 </table>
             </div>
