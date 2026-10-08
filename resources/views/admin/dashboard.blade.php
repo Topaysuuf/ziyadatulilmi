@@ -116,7 +116,7 @@
                         <p class="text-xs text-gray-400 mt-0.5">Pilih nama siswa & kelas untuk menginput nilai.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <!-- Tombol Reset Semua Nilai -->
+                        <!-- Tombol Reset Semua Nilai (Menggunakan Form DELETE) -->
                         <form action="{{ route('admin.nilai.reset') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus SELURUH data nilai ujian? Data tidak bisa dikembalikan!');">
                             @csrf
                             @method('DELETE')
