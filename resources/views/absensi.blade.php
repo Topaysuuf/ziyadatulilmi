@@ -43,6 +43,7 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Cek Presensi / Absensi Siswa</h2>
             <p class="text-gray-500 text-sm mb-6">Pilih Kelas dan Nama Siswa untuk melihat rekap kehadiran.</p>
 
+            <!-- Form Utama Pencarian Siswa -->
             <form action="{{ route('absensi') }}" method="GET" class="grid md:grid-cols-3 gap-4">
                 <!-- Dropdown Pilih Kelas -->
                 <div>
@@ -73,6 +74,22 @@
                     </button>
                 </div>
             </form>
+
+            <!-- Tombol Download Excel Rekap per Kelas -->
+            <div class="mt-6 pt-6 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-xs text-gray-500">Unduh laporan rekapitulasi lengkap per kelas untuk keperluan rapat guru.</p>
+                <form action="{{ route('absensi.export') }}" method="GET" class="flex gap-2 w-full md:w-auto">
+                    <select name="kelas" class="px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none">
+                        <option value="">-- Semua Kelas --</option>
+                        @foreach($kelases as $k)
+                            <option value="{{ $k }}">{{ $k }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-emerald-700 transition text-xs shadow flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="fa-solid fa-file-excel"></i> Download Rekap Excel
+                    </button>
+                </form>
+            </div>
         </div>
 
         @if($siswaSelected)
