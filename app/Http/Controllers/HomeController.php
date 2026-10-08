@@ -10,6 +10,7 @@ use App\Models\Siswa;
 use App\Models\Absensi;
 use App\Models\Nilai;
 
+
 class HomeController extends Controller
 {
     // Halaman Utama / Beranda
@@ -233,3 +234,9 @@ class HomeController extends Controller
         ]);
     }
 }
+// Reset / Hapus Seluruh Data Absensi
+    public function resetAbsensi()
+    {
+        Absensi::truncate();
+        return redirect()->back()->with('success', 'Semua riwayat absensi berhasil direset dan dikosongkan!');
+    }
