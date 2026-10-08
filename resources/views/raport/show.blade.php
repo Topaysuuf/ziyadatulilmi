@@ -1,4 +1,4 @@
-@extends('layouts.app') {{-- Sesuaikan dengan nama layout utama kamu --}}
+@extends('layouts.app') {{-- Mengikuti layout utama aplikasi kamu --}}
 
 @section('content')
 <div class="container mx-auto p-4 md:p-6 max-w-4xl">
@@ -69,10 +69,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $dataNilai = $siswa->nilai->count() > 0 ? $siswa->nilai : $siswa->nilais;
-                    @endphp
-                    @forelse($dataNilai as $index => $item)
+                    @forelse($nilais as $index => $item)
                         @php
                             $val = $item->nilai_akhir ?? $item->nilai ?? $item->skor ?? 0;
                             

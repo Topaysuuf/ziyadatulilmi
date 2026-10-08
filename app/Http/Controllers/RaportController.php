@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Siswa;
+use App\Models\Nilai;
 use Illuminate\Http\Request;
 
 class RaportController extends Controller
 {
     public function show($siswa_id)
     {
-        // Ambil data siswa beserta relasi nilainya
-        $siswa = Siswa::with('nilais')->find($siswa_id) ?? Siswa::with('nilai')->findOrFail($siswa_id);
+        // 1. Ambil data siswa
+        $siswa = Siswa::findOrFail($siswa_id);
 
-        // Jika view raport.show belum ada atau error, render view sederhana dulu
-        if (!view()->exists('raport.show')) {
-            return "View 'raport.show' tidak ditemukan di resources/views/raport/show.blade.php";
-        }
+        // 2. Ambil data nilai siswa ini beserta mapel-nya
+        $nilais = Nilai::with('mapel')->where('siswa_id', $siswa_id)->get();
 
-        return view('raport.show', compact('siswa'));
+        // 3. Tampilkan ke view
+        return view('raport.show', compact('siswa', 'nilais'));
     }
 }
