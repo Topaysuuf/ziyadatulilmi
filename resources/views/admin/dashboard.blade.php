@@ -48,16 +48,28 @@
 
             <!-- Card Presensi -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                     <div>
                         <h3 class="font-bold text-gray-900 text-base flex items-center gap-2">
                             <i class="fa-solid fa-calendar-check text-[#004d25]"></i> Input Presensi / Absensi
                         </h3>
                         <p class="text-xs text-gray-400 mt-0.5">Pilih nama siswa & kelas untuk mencatat kehadiran.</p>
                     </div>
-                    <a href="{{ route('admin.absensi.export') }}" class="bg-emerald-100 text-[#004d25] hover:bg-[#004d25] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
-                        <i class="fa-solid fa-file-excel"></i> Download Excel
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <!-- Tombol Reset Semua Absensi -->
+                        <form action="{{ route('admin.absensi.reset') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus SELURUH data absensi uji coba? Data tidak bisa dikembalikan!');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-trash-can"></i> Reset
+                            </button>
+                        </form>
+
+                        <!-- Tombol Download Excel -->
+                        <a href="{{ route('admin.absensi.export') }}" class="bg-emerald-100 text-[#004d25] hover:bg-[#004d25] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-file-excel"></i> Download Excel
+                        </a>
+                    </div>
                 </div>
 
                 <form action="{{ route('admin.absensi.store') }}" method="POST" class="space-y-4">
