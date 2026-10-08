@@ -239,4 +239,11 @@ class HomeController extends Controller
         Absensi::truncate();
         return redirect()->back()->with('success', 'Semua riwayat absensi berhasil direset dan dikosongkan!');
     }
+
+    // Reset / Hapus Seluruh Data Nilai
+    public function resetNilai()
+    {
+        Nilai::truncate();
+        return redirect()->back()->with('success', 'Semua riwayat nilai berhasil direset dan dikosongkan!');
+    }
 }

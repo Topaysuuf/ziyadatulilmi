@@ -30,11 +30,11 @@ Route::get('/admin/dashboard', [HomeController::class, 'adminDashboard'])->name(
 Route::post('/admin/ppdb/status/{id}', [HomeController::class, 'updatePpdbStatus'])->name('admin.ppdb.updateStatus');
 Route::delete('/admin/ppdb/delete/{id}', [HomeController::class, 'deletePpdb'])->name('admin.ppdb.delete');
 
-// 7. Input Presensi, Nilai & Reset Admin (Menggunakan GET agar aman dari Error 500)
+// 7. Input Presensi, Nilai & Reset Admin (Menggunakan POST)
 Route::post('/admin/absensi/store', [HomeController::class, 'storeAbsensi'])->name('admin.absensi.store');
 Route::post('/admin/nilai/store', [HomeController::class, 'storeNilai'])->name('admin.nilai.store');
-Route::get('/admin/absensi/reset', [HomeController::class, 'resetAbsensi'])->name('admin.absensi.reset');
-Route::get('/admin/nilai/reset', [HomeController::class, 'resetNilai'])->name('admin.nilai.reset');
+Route::post('/admin/absensi/reset', [HomeController::class, 'resetAbsensi'])->name('admin.absensi.reset');
+Route::post('/admin/nilai/reset', [HomeController::class, 'resetNilai'])->name('admin.nilai.reset');
 
 // 8. Export Rekap Excel / XLS
 Route::get('/admin/absensi/export', [HomeController::class, 'exportAbsensi'])->name('absensi.export');
