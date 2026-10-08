@@ -19,12 +19,7 @@
               <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden shadow">
     <img src="{{ asset('images/Logo Pondok.jpeg') }}" alt="Logo Pondok Pesantren Ziyadatul Ilmi" class="w-full h-full object-cover">
 </div>
-<!-- Di dalam header navbar, tambahkan bagian menu mobile/responsive -->
-<div class="flex items-center space-x-2 lg:hidden">
-    <a href="{{ route('absensi') }}" class="bg-yellow-400 text-[#004d25] px-3 py-1 rounded-md text-xs font-bold shadow">Absen</a>
-    <a href="{{ route('nilai') }}" class="bg-yellow-400 text-[#004d25] px-3 py-1 rounded-md text-xs font-bold shadow">Nilai</a>
-    <a href="/login" class="border border-white/70 text-white px-3 py-1 rounded-md text-xs font-semibold">Login</a>
-</div>
+
                 <div>
                     <h1 class="text-base md:text-lg font-bold uppercase leading-tight tracking-wide">{{ $profil->nama_yayasan ?? 'SMA ZIYADATUL ILMI' }}</h1>
                     <p class="text-xs text-gray-200">NPSN: {{ $profil->nsp ?? '510036730333' }} - SWASTA</p>
@@ -56,10 +51,18 @@
                 <a href="{{ route('nilai') }}" class="hover:text-yellow-300 transition">UJIAN & NILAI</a>
             </nav>
 
-            <!-- Tombol Login -->
-            <a href="/login" class="border border-white/70 text-white px-5 py-1.5 rounded-full text-sm font-semibold hover:bg-white hover:text-[#004d25] transition">
-                Login
-            </a>
+            <!-- Tombol Navigasi Kanan (Absen, Nilai, Login untuk HP & Desktop) -->
+            <div class="flex items-center space-x-1.5 md:space-x-3">
+                <a href="{{ route('absensi') }}" class="bg-yellow-400 text-[#004d25] px-2.5 py-1.5 rounded-lg text-xs font-bold shadow hover:bg-yellow-300 transition">
+                    Absen
+                </a>
+                <a href="{{ route('nilai') }}" class="bg-yellow-400 text-[#004d25] px-2.5 py-1.5 rounded-lg text-xs font-bold shadow hover:bg-yellow-300 transition">
+                    Nilai
+                </a>
+                <a href="/login" class="border border-white/70 text-white px-3.5 md:px-5 py-1.5 rounded-full text-xs md:text-sm font-semibold hover:bg-white hover:text-[#004d25] transition">
+                    Login
+                </a>
+            </div>
         </div>
     </header>
 
