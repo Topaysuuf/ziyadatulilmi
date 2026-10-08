@@ -44,7 +44,44 @@
         </div>
 
         <!-- Section Input Absen & Nilai -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10"><!-- Tabel Akses Cepat E-Raport Siswa -->
+<div class="mt-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+    <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Rekapitulasi & E-Raport Siswa</h3>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
+                <tr class="bg-gray-100 text-gray-700 font-semibold border-b">
+                    <th class="p-3">No</th>
+                    <th class="p-3">Nama Siswa</th>
+                    <th class="p-3">Kelas</th>
+                    <th class="p-3 text-center">Aksi Raport</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                @forelse($siswas ?? [] as $index => $s)
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 text-gray-500">{{ $index + 1 }}</td>
+                        <td class="p-3 font-semibold text-gray-800">{{ $s->nama }}</td>
+                        <td class="p-3 text-gray-600">{{ $s->kelas }}</td>
+                        <td class="p-3 text-center">
+                            <a href="{{ route('raport.show', $s->id) }}" 
+                               target="_blank"
+                               class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition">
+                                🖨️ Buka E-Raport
+                            </a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="p-4 text-center text-gray-500 italic">
+                            Belum ada data siswa.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
             <!-- Card Presensi -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
