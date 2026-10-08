@@ -56,13 +56,10 @@
                         <p class="text-xs text-gray-400 mt-0.5">Pilih nama siswa & kelas untuk mencatat kehadiran.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <!-- Tombol Reset Absensi (Form POST) -->
-                        <form action="{{ route('admin.absensi.reset') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus SELURUH data absensi?');">
-                            @csrf
-                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
-                                <i class="fa-solid fa-trash-can"></i> Reset
-                            </button>
-                        </form>
+                        <!-- Tombol Reset Absensi -->
+                        <a href="{{ route('admin.absensi.reset') }}" onclick="return confirm('Yakin ingin menghapus SELURUH data absensi?');" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-trash-can"></i> Reset
+                        </a>
 
                         <!-- Tombol Download Excel -->
                         <a href="{{ route('admin.absensi.export') }}" class="bg-emerald-100 text-[#004d25] hover:bg-[#004d25] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
@@ -115,13 +112,10 @@
                         <p class="text-xs text-gray-400 mt-0.5">Pilih nama siswa & kelas untuk menginput nilai.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <!-- Tombol Reset Nilai (Form POST) -->
-                        <form action="{{ route('admin.nilai.reset') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus SELURUH data nilai?');">
-                            @csrf
-                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
-                                <i class="fa-solid fa-trash-can"></i> Reset
-                            </button>
-                        </form>
+                        <!-- Tombol Reset Nilai -->
+                        <a href="{{ route('admin.nilai.reset') }}" onclick="return confirm('Yakin ingin menghapus SELURUH data nilai?');" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-trash-can"></i> Reset
+                        </a>
 
                         <!-- Tombol Download Excel -->
                         <a href="{{ route('admin.nilai.export') }}" class="bg-emerald-100 text-[#004d25] hover:bg-[#004d25] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
