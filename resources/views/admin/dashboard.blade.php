@@ -102,7 +102,7 @@
                 </form>
             </div>
 
-            <!-- Card Nilai Ujian -->
+           <!-- Card Nilai Ujian -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                     <div>
@@ -116,13 +116,30 @@
                         <a href="{{ route('admin.nilai.reset') }}" onclick="return confirm('Yakin ingin menghapus SELURUH data nilai?');" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
                             <i class="fa-solid fa-trash-can"></i> Reset
                         </a>
-
-                        <!-- Tombol Download Excel -->
-                        <a href="{{ route('admin.nilai.export') }}" class="bg-emerald-100 text-[#004d25] hover:bg-[#004d25] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
-                            <i class="fa-solid fa-file-excel"></i> Download Excel
-                        </a>
                     </div>
                 </div>
+
+                <!-- Form Filter & Download Excel Nilai -->
+                <form action="{{ route('admin.nilai.export') }}" method="GET" class="mb-4 bg-gray-50 p-3 rounded-xl border border-gray-100 flex flex-col gap-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Filter Kelas</label>
+                            <select name="kelas" class="w-full border rounded-lg px-2 py-1.5 text-xs">
+                                <option value="">-- Semua Kelas --</option>
+                                @foreach($kelases ?? [] as $kLS)
+                                    <option value="{{ $kLS }}">{{ $kLS }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Filter Mapel</label>
+                            <input type="text" name="mata_pelajaran" placeholder="Semua Mapel" class="w-full border rounded-lg px-2 py-1.5 text-xs">
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-file-excel"></i> Download Excel Nilai Berdasarkan Filter
+                    </button>
+                </form>
 
                 <form action="{{ route('admin.nilai.store') }}" method="POST" class="space-y-4">
                     @csrf
@@ -161,8 +178,6 @@
                     </button>
                 </form>
             </div>
-
-        </div>
 
         <!-- Tabel Data SPMB -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10">
