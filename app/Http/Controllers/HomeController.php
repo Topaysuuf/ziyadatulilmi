@@ -138,29 +138,60 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Berhasil menginput nilai ujian!');
     }
 
-    // Export Rekap Absensi
-    public function exportAbsensi()
+    // Export Rekapitulasi Absensi Lengkap (Hadir, Sakit, Izin, Alpa, Persentase, KKM)
+    public function exportAbsensi(Request $request)
     {
-        $fileName = 'rekap_absensi_' . date('Y-m-d') . '.xls';
-        $absensis = Absensi::with('siswa')->latest()->get();
+        $kelas = $request->input('kelas');
+        
+        $siswas = Siswa::when($kelas, function ($query) use ($kelas) {
+            return $query->where('kelas', $kelas);
+        })->get();
 
-        return response()->streamDownload(function() use ($absensis) {
+        $fileName = 'Rekap_Absensi_' . ($kelas ? str_replace(' ', '_', $kelas) : 'Semua_Kelas') . '_' . date('Y-m-d') . '.xls';
+
+        return response()->streamDownload(function() use ($siswas) {
             echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
             echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>';
             echo '<body>';
             echo '<table border="1">';
             echo '<tr style="background-color: #004d25; color: #ffffff; font-weight: bold;">';
-            echo '<th>No</th><th>Nama Siswa</th><th>Kelas</th><th>Tanggal</th><th>Status Kehadiran</th>';
+            echo '<th>No</th>';
+            echo '<th>Nama Siswa</th>';
+            echo '<th>Kelas</th>';
+            echo '<th>Hadir</th>';
+            echo '<th>Sakit</th>';
+            echo '<th>Izin</th>';
+            echo '<th>Alpa</th>';
+            echo '<th>Total Pertemuan</th>';
+            echo '<th>Persentase Kehadiran</th>';
+            echo '<th>Keterangan</th>';
             echo '</tr>';
 
-            foreach ($absensis as $index => $item) {
-                echo '<tr>';
-                echo '<td>' . ($index + 1) . '</td>';
-                echo '<td>' . htmlspecialchars($item->siswa->nama ?? '-') . '</td>';
-                echo '<td>' . htmlspecialchars($item->siswa->kelas ?? '-') . '</td>';
-                echo '<td>' . $item->tanggal . '</td>';
-                echo '<td>' . $item->status . '</td>';
-                echo '</tr>';
+            $no = 1;
+            foreach ($siswas as $siswa) {
+                $hadir = Absensi::where('siswa_id', $siswa->id)->where('status', 'Hadir')->count();
+                $sakit = Absensi::where('siswa_id', $siswa->id)->where('status', 'Sakit')->count();
+                $izin  = Absensi::where('siswa_id', $siswa->id)->where('status', 'Izin')->count();
+                $alpa  = Absensi::where('siswa_id', $siswa->id)->where('status', 'Alpa')->count();
+
+                $totalPertemuan = $hadir + $sakit + $izin + $alpa;
+                $persentase = $totalPertemuan > 0 ? round(($hadir / $totalPertemuan) * 100, 2) : 0;
+                $keterangan = $persentase < 75 ? 'Di Bawah Minimum (<75%)' : 'Aman';
+                $warnaBg = $persentase < 75 ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
+
+                echo "<tr {$warnaBg}>";
+                echo "<td>{$no}</td>";
+                echo "<td>" . htmlspecialchars($siswa->nama) . "</td>";
+                echo "<td>" . htmlspecialchars($siswa->kelas) . "</td>";
+                echo "<td>{$hadir}</td>";
+                echo "<td>{$sakit}</td>";
+                echo "<td>{$izin}</td>";
+                echo "<td>{$alpa}</td>";
+                echo "<td>{$totalPertemuan}</td>";
+                echo "<td>{$persentase}%</td>";
+                echo "<td><b>{$keterangan}</b></td>";
+                echo "</tr>";
+                $no++;
             }
 
             echo '</table>';
