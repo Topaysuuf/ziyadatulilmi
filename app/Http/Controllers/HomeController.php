@@ -138,12 +138,12 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Berhasil menginput nilai ujian!');
     }
 
-    // Export Rekapitulasi Absensi Lengkap (Hadir, Sakit, Izin, Alpa, Persentase, KKM)
+    // Export Rekapitulasi Absensi Lengkap per Kelas
     public function exportAbsensi(Request $request)
     {
         $kelas = $request->input('kelas');
         
-        $siswas = Siswa::when($kelas, function ($query) use ($kelas) {
+        $siswas = Siswa::when($kelas != '', function ($query) use ($kelas) {
             return $query->where('kelas', $kelas);
         })->get();
 
