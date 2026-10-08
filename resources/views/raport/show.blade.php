@@ -16,7 +16,7 @@
 <body class="bg-gray-100 min-h-screen p-4 md:p-6 text-gray-800">
 
     <div class="max-w-4xl mx-auto">
-        <!-- Tombol Cetak & Kembali (Sembunyi saat diprint) -->
+        <!-- Tombol Cetak & Kembali -->
         <div class="no-print flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
             <div>
                 <h1 class="text-xl font-bold text-gray-800">E-Raport Digital</h1>
@@ -95,11 +95,19 @@
                                 } else { 
                                     $predikat = 'D'; $ket = 'Perlu Bimbingan'; 
                                 }
+
+                                // Pengecekan nama mapel yang fleksibel dan bebas error dari NULL
+                                $namaMapel = optional($item->mapel)->nama_mapel 
+                                    ?? optional($item->mapel)->mapel 
+                                    ?? $item->mata_pelajaran 
+                                    ?? $item->nama_mapel 
+                                    ?? $item->mapel 
+                                    ?? 'Mata Pelajaran';
                             @endphp
                             <tr class="hover:bg-gray-50">
                                 <td class="border border-gray-300 px-3 py-2 text-center">{{ $index + 1 }}</td>
                                 <td class="border border-gray-300 px-4 py-2 font-medium text-gray-800">
-                                    {{ $item->mapel->nama_mapel ?? $item->mapel->mapel ?? 'Mata Pelajaran' }}
+                                    {{ $namaMapel }}
                                 </td>
                                 <td class="border border-gray-300 px-3 py-2 text-center font-bold text-gray-900">{{ $val }}</td>
                                 <td class="border border-gray-300 px-3 py-2 text-center font-semibold">{{ $predikat }}</td>
