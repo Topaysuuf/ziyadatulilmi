@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AbsensiExportController;
+
+// Route Export Rekap Absensi Excel
+get('/admin/absensi/export', [AbsensiExportController::class, 'exportExcel'])->name('absensi.export');
 
 // 1. Halaman Utama / Beranda
 Route::get('/', [HomeController::class, 'index'])->name('home');
