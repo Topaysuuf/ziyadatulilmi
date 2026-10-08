@@ -108,16 +108,28 @@
 
             <!-- Card Nilai Ujian -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                     <div>
                         <h3 class="font-bold text-gray-900 text-base flex items-center gap-2">
                             <i class="fa-solid fa-graduation-cap text-[#004d25]"></i> Input Nilai Ujian
                         </h3>
                         <p class="text-xs text-gray-400 mt-0.5">Pilih nama siswa & kelas untuk menginput nilai.</p>
                     </div>
-                    <a href="{{ route('admin.nilai.export') }}" class="bg-emerald-100 text-[#004d25] hover:bg-[#004d25] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
-                        <i class="fa-solid fa-file-excel"></i> Download Excel
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <!-- Tombol Reset Semua Nilai -->
+                        <form action="{{ route('admin.nilai.reset') }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus SELURUH data nilai ujian? Data tidak bisa dikembalikan!');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-trash-can"></i> Reset
+                            </button>
+                        </form>
+
+                        <!-- Tombol Download Excel -->
+                        <a href="{{ route('admin.nilai.export') }}" class="bg-emerald-100 text-[#004d25] hover:bg-[#004d25] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-file-excel"></i> Download Excel
+                        </a>
+                    </div>
                 </div>
 
                 <form action="{{ route('admin.nilai.store') }}" method="POST" class="space-y-4">
