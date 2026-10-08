@@ -10,24 +10,21 @@ class AbsensiExportController extends Controller
 {
     public function exportExcel(Request $request)
     {
-        $kelas = $request->input('kelas'); // Menerima filter kelas dari user
+        $kelas = $request->input('kelas');
         
-        // Ambil data siswa berdasarkan kelas
         $siswas = Siswa::when($kelas, function ($query) use ($kelas) {
             return $query->where('kelas', $kelas);
         })->get();
 
-        // Nama file Excel
         $fileName = 'Rekap_Absensi_' . ($kelas ? str_replace(' ', '_', $kelas) : 'Semua_Kelas') . '_' . date('Y-m-d') . '.xls';
 
-        // Header agar dibaca sebagai file Excel oleh browser
         header("Content-Type: application/vnd.ms-excel");
         header("Content-Disposition: attachment; filename=\"$fileName\"");
         header("Pragma: no-cache");
         header("Expires: 0");
 
         echo '<table border="1">';
-        echo '<tr style="background-color: #198754; color: white; font-weight: bold;">';
+        echo '<tr style="background-color: #004d25; color: white; font-weight: bold;">';
         echo '<th>No</th>';
         echo '<th>Nama Siswa</th>';
         echo '<th>Kelas</th>';
@@ -42,18 +39,13 @@ class AbsensiExportController extends Controller
 
         $no = 1;
         foreach ($siswas as $siswa) {
-            // Hitung rekap dari tabel absensi berdasarkan id siswa
             $hadir = Absensi::where('siswa_id', $siswa->id)->where('status', 'Hadir')->count();
             $sakit = Absensi::where('siswa_id', $siswa->id)->where('status', 'Sakit')->count();
             $izin  = Absensi::where('siswa_id', $siswa->id)->where('status', 'Izin')->count();
             $alpa  = Absensi::where('siswa_id', $siswa->id)->where('status', 'Alpa')->count();
 
             $totalPertemuan = $hadir + $sakit + $izin + $alpa;
-            
-            // Hitung persentase kehadiran (jika total pertemuan 0, persentase 0)
             $persentase = $totalPertemuan > 0 ? round(($hadir / $totalPertemuan) * 100, 2) : 0;
-
-            // Penentu status KKM Kehadiran (misal batas minimum 75%)
             $keterangan = $persentase < 75 ? 'Di Bawah Minimum (<75%)' : 'Aman';
             $warnaBg = $persentase < 75 ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
 
