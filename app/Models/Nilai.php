@@ -9,10 +9,11 @@ class Nilai extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['siswa_id', 'mata_pelajaran', 'jenis_ujian', 'nilai'];
+    protected $guarded = [];
 
-    public function siswa()
+    // Relasi ke tabel Mapel
+    public function mapel()
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(Mapel::class, 'mapel_id');
     }
 }
