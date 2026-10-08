@@ -10,11 +10,17 @@ class RaportController extends Controller
 {
     public function show($siswa_id)
     {
-        $siswa = Siswa::findOrFail($siswa_id);
+        // 1. Cari data siswa berdasarkan ID
+        $siswa = Siswa::find($siswa_id);
 
-        // Ambil nilai siswa tanpa memaksa relasi mapel
+        if (!$siswa) {
+            return "Siswa dengan ID $siswa_id tidak ditemukan di database.";
+        }
+
+        // 2. Ambil data nilai tanpa query relasi mapel dulu biar nggak crash
         $nilais = Nilai::where('siswa_id', $siswa_id)->get();
 
+        // 3. Tampilkan ke view
         return view('raport.show', compact('siswa', 'nilais'));
     }
 }
