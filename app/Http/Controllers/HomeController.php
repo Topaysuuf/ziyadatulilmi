@@ -92,61 +92,17 @@ class HomeController extends Controller
         $profil = Profil::first();
         $pendaftar = Ppdb::latest()->get();
         $siswas = Siswa::orderBy('kelas')->orderBy('nama')->get();
-        $kelases = Siswa::select('kelas')->distinct()->pluck('kelas'); // <-- Pastikan ini ada supaya filter kelas di Excel nilai muncul
+        $kelases = Siswa::select('kelas')->distinct()->pluck('kelas');
 
         return view('admin.dashboard', compact('profil', 'pendaftar', 'siswas', 'kelases'));
     }
 
-    // Export Rekap Nilai Berdasarkan Kelas & Mata Pelajaran
-    public function exportNilai(Request $request)
+    // Update Status SPMB Admin
+    public function updatePpdbStatus(Request $request, $id)
     {
-        $kelas = $request->input('kelas');
-        $mapel = $request->input('mata_pelajaran');
-
-        $query = Nilai::with('siswa');
-
-        if ($kelas) {
-            $query->whereHas('siswa', function($q) use ($kelas) {
-                $q->where('kelas', $kelas);
-            });
-        }
-
-        if ($mapel) {
-            $query->where('mata_pelajaran', 'LIKE', '%' . $mapel . '%');
-        }
-
-        $nilais = $query->latest()->get();
-        $fileName = 'Rekap_Nilai_' . ($kelas ? str_replace(' ', '_', $kelas) : 'Semua_Kelas') . '_' . date('Y-m-d') . '.xls';
-
-        return response()->streamDownload(function() use ($nilais, $kelas, $mapel) {
-            echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
-            echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>';
-            echo '<body>';
-            echo '<h3>Rekap Nilai Ujian Siswa</h3>';
-            if ($kelas) echo '<p>Kelas: ' . htmlspecialchars($kelas) . '</p>';
-            if ($mapel) echo '<p>Mata Pelajaran: ' . htmlspecialchars($mapel) . '</p>';
-            echo '<table border="1">';
-            echo '<tr style="background-color: #004d25; color: #ffffff; font-weight: bold;">';
-            echo '<th>No</th><th>Nama Siswa</th><th>Kelas</th><th>Mata Pelajaran</th><th>Jenis Ujian</th><th>Nilai</th>';
-            echo '</tr>';
-
-            foreach ($nilais as $index => $item) {
-                echo '<tr>';
-                echo '<td>' . ($index + 1) . '</td>';
-                echo '<td>' . htmlspecialchars($item->siswa->nama ?? '-') . '</td>';
-                echo '<td>' . htmlspecialchars($item->siswa->kelas ?? '-') . '</td>';
-                echo '<td>' . htmlspecialchars($item->mata_pelajaran) . '</td>';
-                echo '<td>' . htmlspecialchars($item->jenis_ujian) . '</td>'; // <-- Sudah diperbaiki dari $item$item
-                echo '<td>' . $item->nilai . '</td>';
-                echo '</tr>';
-            }
-
-            echo '</table>';
-            echo '</body></html>';
-        }, $fileName, [
-            "Content-Type" => "application/vnd.ms-excel",
-            "Content-Disposition" => "attachment; filename=$fileName",
-        ]);
+        $request->validate(['status' => 'required|in:Menunggu,Diterima,Ditolak']);
+        Ppdb::findOrFail($id)->update(['status' => $request->status]);
+        return redirect()->back()->with('success', 'Status pendaftaran diperbarui!');
     }
 
     // Hapus Data SPMB Admin
@@ -283,7 +239,7 @@ class HomeController extends Controller
                 echo '<td>' . htmlspecialchars($item->siswa->nama ?? '-') . '</td>';
                 echo '<td>' . htmlspecialchars($item->siswa->kelas ?? '-') . '</td>';
                 echo '<td>' . htmlspecialchars($item->mata_pelajaran) . '</td>';
-                echo '<td>' . htmlspecialchars($item$item->jenis_ujian) . '</td>';
+                echo '<td>' . htmlspecialchars($item->jenis_ujian) . '</td>';
                 echo '<td>' . $item->nilai . '</td>';
                 echo '</tr>';
             }
@@ -295,6 +251,7 @@ class HomeController extends Controller
             "Content-Disposition" => "attachment; filename=$fileName",
         ]);
     }
+
     // Reset / Hapus Seluruh Data Absensi
     public function resetAbsensi()
     {
