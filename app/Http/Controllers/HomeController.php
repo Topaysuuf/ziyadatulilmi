@@ -138,77 +138,65 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Berhasil menginput nilai ujian!');
     }
 
-  // Export Rekapitulasi Absensi Lengkap per Kelas yang Aman & Anti-Error 500
+// Export Rekapitulasi Absensi untuk Halaman Publik
     public function exportAbsensi(Request $request)
     {
-        try {
-            $kelas = $request->input('kelas');
-            
-            // Ambil data siswa dengan relasi absensi sekaligus untuk mencegah query berulang
-            $query = Siswa::with('absensis');
-            if (!empty($kelas)) {
-                $query->where('kelas', $kelas);
-            }
-            $siswas = $query->get();
+        $kelas = $request->input('kelas');
+        
+        $siswas = Siswa::when($kelas, function ($query) use ($kelas) {
+            return $query->where('kelas', $kelas);
+        })->get();
 
-            $fileName = 'Rekap_Absensi_' . ($kelas ? str_replace(' ', '_', $kelas) : 'Semua_Kelas') . '_' . date('Y-m-d') . '.xls';
+        $fileName = 'Rekap_Absensi_' . ($kelas ? str_replace(' ', '_', $kelas) : 'Semua_Kelas') . '_' . date('Y-m-d') . '.xls';
 
-            return response()->streamDownload(function() use ($siswas) {
-                echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
-                echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>';
-                echo '<body>';
-                echo '<table border="1">';
-                echo '<tr style="background-color: #004d25; color: #ffffff; font-weight: bold;">';
-                echo '<th>No</th>';
-                echo '<th>Nama Siswa</th>';
-                echo '<th>Kelas</th>';
-                echo '<th>Hadir</th>';
-                echo '<th>Sakit</th>';
-                echo '<th>Izin</th>';
-                echo '<th>Alpa</th>';
-                echo '<th>Total Pertemuan</th>';
-                echo '<th>Persentase Kehadiran</th>';
-                echo '<th>Keterangan</th>';
-                echo '</tr>';
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$fileName\"");
+        header("Pragma: no-cache");
+        header("Expires: 0");
 
-                $no = 1;
-                foreach ($siswas as $siswa) {
-                    // Hitung status dari collection relasi yang sudah dimuat (lebih cepat & aman)
-                    $hadir = $siswa->absensis->where('status', 'Hadir')->count();
-                    $sakit = $siswa->absensis->where('status', 'Sakit')->count();
-                    $izin  = $siswa->absensis->where('status', 'Izin')->count();
-                    $alpa  = $siswa->absensis->where('status', 'Alpa')->count();
+        echo '<table border="1">';
+        echo '<tr style="background-color: #004d25; color: white; font-weight: bold;">';
+        echo '<th>No</th>';
+        echo '<th>Nama Siswa</th>';
+        echo '<th>Kelas</th>';
+        echo '<th>Hadir</th>';
+        echo '<th>Sakit</th>';
+        echo '<th>Izin</th>';
+        echo '<th>Alpa</th>';
+        echo '<th>Total Pertemuan</th>';
+        echo '<th>Persentase Kehadiran</th>';
+        echo '<th>Keterangan</th>';
+        echo '</tr>';
 
-                    $totalPertemuan = $hadir + $sakit + $izin + $alpa;
-                    $persentase = $totalPertemuan > 0 ? round(($hadir / $totalPertemuan) * 100, 2) : 0;
-                    $keterangan = $persentase < 75 ? 'Di Bawah Minimum (<75%)' : 'Aman';
-                    $warnaBg = $persentase < 75 ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
+        $no = 1;
+        foreach ($siswas as $siswa) {
+            $hadir = Absensi::where('siswa_id', $siswa->id)->where('status', 'Hadir')->count();
+            $sakit = Absensi::where('siswa_id', $siswa->id)->where('status', 'Sakit')->count();
+            $izin  = Absensi::where('siswa_id', $siswa->id)->where('status', 'Izin')->count();
+            $alpa  = Absensi::where('siswa_id', $siswa->id)->where('status', 'Alpa')->count();
 
-                    echo "<tr {$warnaBg}>";
-                    echo "<td>{$no}</td>";
-                    echo "<td>" . htmlspecialchars($siswa->nama ?? '-') . "</td>";
-                    echo "<td>" . htmlspecialchars($siswa->kelas ?? '-') . "</td>";
-                    echo "<td>{$hadir}</td>";
-                    echo "<td>{$sakit}</td>";
-                    echo "<td>{$izin}</td>";
-                    echo "<td>{$alpa}</td>";
-                    echo "<td>{$totalPertemuan}</td>";
-                    echo "<td>{$persentase}%</td>";
-                    echo "<td><b>{$keterangan}</b></td>";
-                    echo "</tr>";
-                    $no++;
-                }
+            $totalPertemuan = $hadir + $sakit + $izin + $alpa;
+            $persentase = $totalPertemuan > 0 ? round(($hadir / $totalPertemuan) * 100, 2) : 0;
+            $keterangan = $persentase < 75 ? 'Di Bawah Minimum (<75%)' : 'Aman';
+            $warnaBg = $persentase < 75 ? 'style="background-color: #f8d7da; color: #721c24;"' : '';
 
-                echo '</table>';
-                echo '</body></html>';
-            }, $fileName, [
-                "Content-Type" => "application/vnd.ms-excel",
-                "Content-Disposition" => "attachment; filename=$fileName",
-            ]);
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal mengexport data: ' . $e->getMessage());
+            echo "<tr {$warnaBg}>";
+            echo "<td>{$no}</td>";
+            echo "<td>" . htmlspecialchars($siswa->nama) . "</td>";
+            echo "<td>" . htmlspecialchars($siswa->kelas) . "</td>";
+            echo "<td>{$hadir}</td>";
+            echo "<td>{$sakit}</td>";
+            echo "<td>{$izin}</td>";
+            echo "<td>{$alpa}</td>";
+            echo "<td>{$totalPertemuan}</td>";
+            echo "<td>{$persentase}%</td>";
+            echo "<td><b>{$keterangan}</b></td>";
+            echo "</tr>";
+            $no++;
         }
+
+        echo '</table>';
+        exit;
     }
 
     // Export Rekap Nilai
