@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\AbsensiExportController;
 
 // 1. Halaman Utama / Beranda
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -31,13 +30,12 @@ Route::get('/admin/dashboard', [HomeController::class, 'adminDashboard'])->name(
 Route::post('/admin/ppdb/status/{id}', [HomeController::class, 'updatePpdbStatus'])->name('admin.ppdb.updateStatus');
 Route::delete('/admin/ppdb/delete/{id}', [HomeController::class, 'deletePpdb'])->name('admin.ppdb.delete');
 
-// 7. Input Presensi & Nilai Admin
+// 7. Input Presensi, Nilai & Reset Absensi Admin
 Route::post('/admin/absensi/store', [HomeController::class, 'storeAbsensi'])->name('admin.absensi.store');
 Route::post('/admin/nilai/store', [HomeController::class, 'storeNilai'])->name('admin.nilai.store');
+Route::delete('/admin/absensi/reset', [HomeController::class, 'resetAbsensi'])->name('admin.absensi.reset');
 
-// 8. Export Rekap Excel (Hanya satu rute per fungsi yang aktif)
-Route::get('/admin/absensi/export', [AbsensiExportController::class, 'exportExcel'])->name('absensi.export');
-Route::get('/admin/nilai/export', [HomeController::class, 'exportNilai'])->name('admin.nilai.export');// 8. Export Rekap Excel
-Route::get('/admin/absensi/export', [AbsensiExportController::class, 'exportExcel'])->name('absensi.export');
-Route::get('/admin/absensi/export-alias', [AbsensiExportController::class, 'exportExcel'])->name('admin.absensi.export'); // Tambahan alias aman
+// 8. Export Rekap Excel / XLS
+Route::get('/admin/absensi/export', [HomeController::class, 'exportAbsensi'])->name('absensi.export');
+Route::get('/admin/absensi/export-alias', [HomeController::class, 'exportAbsensi'])->name('admin.absensi.export');
 Route::get('/admin/nilai/export', [HomeController::class, 'exportNilai'])->name('admin.nilai.export');
