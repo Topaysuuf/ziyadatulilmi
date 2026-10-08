@@ -271,6 +271,11 @@
             </div>
         </div>
     </footer>
-
+<!-- Di dalam header navbar, tambahkan bagian menu mobile/responsive -->
+<div class="flex items-center space-x-2 lg:hidden">
+    <a href="{{ route('absensi') }}" class="bg-yellow-400 text-[#004d25] px-3 py-1 rounded-md text-xs font-bold shadow">Absen</a>
+    <a href="{{ route('nilai') }}" class="bg-yellow-400 text-[#004d25] px-3 py-1 rounded-md text-xs font-bold shadow">Nilai</a>
+    <a href="/login" class="border border-white/70 text-white px-3 py-1 rounded-md text-xs font-semibold">Login</a>
+</div>
 </body>
 </html>
