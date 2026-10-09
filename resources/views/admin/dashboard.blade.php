@@ -6,6 +6,21 @@
     <title>Dashboard Admin - SMA Ziyadatul Ilmi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tom Select CSS (Fitur Pencarian Dropdown) -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <style>
+        .ts-control {
+            border-radius: 0.5rem !important;
+            padding: 0.625rem 0.75rem !important;
+            border-color: #e5e7eb !important;
+            font-size: 0.875rem !important;
+        }
+        .ts-wrapper.focus .ts-control {
+            border-color: #004d25 !important;
+            box-shadow: 0 0 0 2px rgba(0, 77, 37, 0.2) !important;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -44,44 +59,7 @@
         </div>
 
         <!-- Section Input Absen & Nilai -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10"><!-- Tabel Akses Cepat E-Raport Siswa -->
-<div class="mt-8 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-    <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Rekapitulasi & E-Raport Siswa</h3>
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse text-sm">
-            <thead>
-                <tr class="bg-gray-100 text-gray-700 font-semibold border-b">
-                    <th class="p-3">No</th>
-                    <th class="p-3">Nama Siswa</th>
-                    <th class="p-3">Kelas</th>
-                    <th class="p-3 text-center">Aksi Raport</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @forelse($siswas ?? [] as $index => $s)
-                    <tr class="hover:bg-gray-50">
-                        <td class="p-3 text-gray-500">{{ $index + 1 }}</td>
-                        <td class="p-3 font-semibold text-gray-800">{{ $s->nama }}</td>
-                        <td class="p-3 text-gray-600">{{ $s->kelas }}</td>
-                        <td class="p-3 text-center">
-                            <a href="{{ route('raport.show', $s->id) }}" 
-                               target="_blank"
-                               class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition">
-                                🖨️ Buka E-Raport
-                            </a>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="p-4 text-center text-gray-500 italic">
-                            Belum ada data siswa.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
 
             <!-- Card Presensi -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
@@ -109,8 +87,9 @@
                     @csrf
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-500 mb-1">NAMA SISWA & KELAS</label>
-                        <select name="siswa_id" class="w-full border rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#004d25]" required>
-                            <option value="">-- Pilih Siswa --</option>
+                        <!-- ID ditambahkan: select-siswa-absensi -->
+                        <select name="siswa_id" id="select-siswa-absensi" required>
+                            <option value="">-- Ketik / Pilih Nama Siswa --</option>
                             @foreach($siswas as $siswa)
                                 <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{ $siswa->kelas }})</option>
                             @endforeach
@@ -139,7 +118,7 @@
                 </form>
             </div>
 
-           <!-- Card Nilai Ujian -->
+            <!-- Card Nilai Ujian -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                     <div>
@@ -182,8 +161,9 @@
                     @csrf
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-500 mb-1">NAMA SISWA & KELAS</label>
-                        <select name="siswa_id" class="w-full border rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#004d25]" required>
-                            <option value="">-- Pilih Siswa --</option>
+                        <!-- ID ditambahkan: select-siswa-nilai -->
+                        <select name="siswa_id" id="select-siswa-nilai" required>
+                            <option value="">-- Ketik / Pilih Nama Siswa --</option>
                             @foreach($siswas as $siswa)
                                 <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{ $siswa->kelas }})</option>
                             @endforeach
@@ -215,6 +195,49 @@
                     </button>
                 </form>
             </div>
+
+        </div>
+
+        <!-- Tabel Akses Cepat E-Raport Siswa -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-10">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span>📊</span> Rekapitulasi & E-Raport Siswa
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700 font-semibold border-b">
+                            <th class="p-3">No</th>
+                            <th class="p-3">Nama Siswa</th>
+                            <th class="p-3">Kelas</th>
+                            <th class="p-3 text-center">Aksi Raport</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @forelse($siswas ?? [] as $index => $s)
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-3 text-gray-500">{{ $index + 1 }}</td>
+                                <td class="p-3 font-semibold text-gray-800">{{ $s->nama }}</td>
+                                <td class="p-3 text-gray-600">{{ $s->kelas }}</td>
+                                <td class="p-3 text-center">
+                                    <a href="{{ route('raport.show', $s->id) }}" 
+                                       target="_blank"
+                                       class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition">
+                                        🖨️ Buka E-Raport
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="p-4 text-center text-gray-500 italic">
+                                    Belum ada data siswa.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         <!-- Tabel Data SPMB -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10">
@@ -278,5 +301,30 @@
 
     </div>
 
+    <!-- Tom Select JS (Inisialisasi Fitur Pencarian Dropdown) -->
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Aktifkan pencarian di form presensi
+            if (document.getElementById('select-siswa-absensi')) {
+                new TomSelect('#select-siswa-absensi', {
+                    create: false,
+                    sortField: { field: "text", direction: "asc" },
+                    placeholder: "-- Ketik / Pilih Nama Siswa --",
+                    plugins: ['dropdown_input']
+                });
+            }
+
+            // Aktifkan pencarian di form nilai
+            if (document.getElementById('select-siswa-nilai')) {
+                new TomSelect('#select-siswa-nilai', {
+                    create: false,
+                    sortField: { field: "text", direction: "asc" },
+                    placeholder: "-- Ketik / Pilih Nama Siswa --",
+                    plugins: ['dropdown_input']
+                });
+            }
+        });
+    </script>
 </body>
 </html>
