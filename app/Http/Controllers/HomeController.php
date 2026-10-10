@@ -211,16 +211,97 @@ class HomeController extends Controller
     }
 
     /**
-     * 8. Export Absensi & Nilai
+     * 8. Export Absensi ke Excel (CSV)
      */
     public function exportAbsensi()
     {
-        // Logika export jika ada pustaka Excel, atau kembalikan pesan konfirmasi
-        return redirect()->back()->with('success', 'Proses download absensi berhasil.');
+        $fileName = 'Rekap_Absensi_Siswa_' . date('Y-m-d') . '.csv';
+
+        $absensis = DB::table('absensis')
+            ->leftJoin('siswas', 'absensis.siswa_id', '=', 'siswas.id')
+            ->select('siswas.nama', 'siswas.kelas', 'absensis.tanggal', 'absensis.status')
+            ->orderBy('absensis.tanggal', 'desc')
+            ->get();
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use ($absensis) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM untuk Microsoft Excel
+            
+            fputcsv($file, ['No', 'Nama Siswa', 'Kelas', 'Tanggal', 'Status Kehadiran']);
+
+            foreach ($absensis as $index => $row) {
+                fputcsv($file, [
+                    $index + 1,
+                    $row->nama ?? '-',
+                    $row->kelas ?? '-',
+                    $row->tanggal,
+                    $row->status
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
+    /**
+     * 8. Export Nilai ke Excel (CSV) Berdasarkan Filter
+     */
     public function exportNilai(Request $request)
     {
-        return redirect()->back()->with('success', 'Proses download nilai berhasil.');
+        $fileName = 'Rekap_Nilai_Siswa_' . date('Y-m-d') . '.csv';
+
+        $query = DB::table('nilais')
+            ->leftJoin('siswas', 'nilais.siswa_id', '=', 'siswas.id')
+            ->select('siswas.nama', 'siswas.kelas', 'nilais.mata_pelajaran', 'nilais.jenis_ujian', 'nilais.nilai');
+
+        if ($request->filled('kelas')) {
+            $query->where('siswas.kelas', $request->kelas);
+        }
+
+        if ($request->filled('mata_pelajaran')) {
+            $query->where('nilais.mata_pelajaran', 'LIKE', '%' . $request->mata_pelajaran . '%');
+        }
+
+        $nilais = $query->get();
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use ($nilais) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM untuk Microsoft Excel
+
+            fputcsv($file, ['No', 'Nama Siswa', 'Kelas', 'Mata Pelajaran', 'Jenis Ujian', 'Nilai']);
+
+            foreach ($nilais as $index => $row) {
+                fputcsv($file, [
+                    $index + 1,
+                    $row->nama ?? '-',
+                    $row->kelas ?? '-',
+                    $row->mata_pelajaran,
+                    $row->jenis_ujian,
+                    $row->nilai
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
