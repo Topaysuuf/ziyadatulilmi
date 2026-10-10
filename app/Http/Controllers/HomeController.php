@@ -72,11 +72,10 @@ class HomeController extends Controller
     }
 
     /**
-     * 3. Cek Nilai & E-Raport Publik (/nilai) -> PERBAIKAN ERROR 500
+     * 3. Cek Nilai & E-Raport Publik (/nilai)
      */
     public function nilai()
     {
-        // Mengambil data siswa agar perulangan $siswas di nilai.blade.php berjalan lancar
         $siswas = class_exists('App\Models\Siswa') ? Siswa::all() : DB::table('siswas')->get();
         return view('nilai', compact('siswas'));
     }
@@ -211,54 +210,69 @@ class HomeController extends Controller
     }
 
     /**
-     * 8. Export Absensi ke Excel (CSV)
+     * 8. Export Rekap Absensi ke Format Excel (.xls) Rekapitulasi Lengkap
      */
     public function exportAbsensi()
     {
-        $fileName = 'Rekap_Absensi_Siswa_' . date('Y-m-d') . '.csv';
+        $fileName = 'Rekap_Absensi_Semua_Kelas_' . date('Y-m-d') . '.xls';
 
-        $absensis = DB::table('absensis')
-            ->leftJoin('siswas', 'absensis.siswa_id', '=', 'siswas.id')
-            ->select('siswas.nama', 'siswas.kelas', 'absensis.tanggal', 'absensis.status')
-            ->orderBy('absensis.tanggal', 'desc')
-            ->get();
+        $siswas = DB::table('siswas')->get();
 
         $headers = [
-            "Content-type"        => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=$fileName",
+            "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=\"$fileName\"",
             "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         ];
 
-        $callback = function() use ($absensis) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM untuk Microsoft Excel
-            
-            fputcsv($file, ['No', 'Nama Siswa', 'Kelas', 'Tanggal', 'Status Kehadiran']);
+        $callback = function() use ($siswas) {
+            echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+            echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>';
+            echo '<body>';
+            echo '<table border="1">';
+            echo '<tr style="background-color: #f2f2f2; font-weight: bold; text-align: center;">';
+            echo '<th>No</th><th>Nama Siswa</th><th>Kelas</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alpa</th><th>Total Pertemuan</th><th>% Kehadiran</th><th>Keterangan</th>';
+            echo '</tr>';
 
-            foreach ($absensis as $index => $row) {
-                fputcsv($file, [
-                    $index + 1,
-                    $row->nama ?? '-',
-                    $row->kelas ?? '-',
-                    $row->tanggal,
-                    $row->status
-                ]);
+            foreach ($siswas as $index => $siswa) {
+                $hadir = DB::table('absensis')->where('siswa_id', $siswa->id)->where('status', 'Hadir')->count();
+                $izin  = DB::table('absensis')->where('siswa_id', $siswa->id)->where('status', 'Izin')->count();
+                $sakit = DB::table('absensis')->where('siswa_id', $siswa->id)->where('status', 'Sakit')->count();
+                $alpa  = DB::table('absensis')->where('siswa_id', $siswa->id)->where('status', 'Alpa')->count();
+
+                $total = $hadir + $izin + $sakit + $alpa;
+                $persen = $total > 0 ? round(($hadir / $total) * 100) : 0;
+                
+                $keterangan = $persen < 75 ? 'Di Bawah Minimum (<75%)' : 'Memenuhi';
+                $bgColor = $persen < 75 ? '#fce4d6' : '#ffffff';
+
+                echo "<tr style='background-color: {$bgColor};'>";
+                echo "<td align='center'>" . ($index + 1) . "</td>";
+                echo "<td>" . htmlspecialchars($siswa->nama ?? '-') . "</td>";
+                echo "<td>" . htmlspecialchars($siswa->kelas ?? '-') . "</td>";
+                echo "<td align='center'>{$hadir}</td>";
+                echo "<td align='center'>{$izin}</td>";
+                echo "<td align='center'>{$sakit}</td>";
+                echo "<td align='center'>{$alpa}</td>";
+                echo "<td align='center'>{$total}</td>";
+                echo "<td align='right'>{$persen}%</td>";
+                echo "<td><b>{$keterangan}</b></td>";
+                echo "</tr>";
             }
 
-            fclose($file);
+            echo '</table>';
+            echo '</body></html>';
         };
 
         return response()->stream($callback, 200, $headers);
     }
 
     /**
-     * 8. Export Nilai ke Excel (CSV) Berdasarkan Filter
+     * 8. Export Rekap Nilai ke Format Excel (.xls)
      */
     public function exportNilai(Request $request)
     {
-        $fileName = 'Rekap_Nilai_Siswa_' . date('Y-m-d') . '.csv';
+        $fileName = 'Rekap_Nilai_Siswa_' . date('Y-m-d') . '.xls';
 
         $query = DB::table('nilais')
             ->leftJoin('siswas', 'nilais.siswa_id', '=', 'siswas.id')
@@ -275,31 +289,34 @@ class HomeController extends Controller
         $nilais = $query->get();
 
         $headers = [
-            "Content-type"        => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=$fileName",
+            "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=\"$fileName\"",
             "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         ];
 
         $callback = function() use ($nilais) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM untuk Microsoft Excel
-
-            fputcsv($file, ['No', 'Nama Siswa', 'Kelas', 'Mata Pelajaran', 'Jenis Ujian', 'Nilai']);
+            echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+            echo '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>';
+            echo '<body>';
+            echo '<table border="1">';
+            echo '<tr style="background-color: #f2f2f2; font-weight: bold; text-align: center;">';
+            echo '<th>No</th><th>Nama Siswa</th><th>Kelas</th><th>Mata Pelajaran</th><th>Jenis Ujian</th><th>Nilai</th>';
+            echo '</tr>';
 
             foreach ($nilais as $index => $row) {
-                fputcsv($file, [
-                    $index + 1,
-                    $row->nama ?? '-',
-                    $row->kelas ?? '-',
-                    $row->mata_pelajaran,
-                    $row->jenis_ujian,
-                    $row->nilai
-                ]);
+                echo '<tr>';
+                echo '<td align="center">' . ($index + 1) . '</td>';
+                echo '<td>' . htmlspecialchars($row->nama ?? '-') . '</td>';
+                echo '<td>' . htmlspecialchars($row->kelas ?? '-') . '</td>';
+                echo '<td>' . htmlspecialchars($row->mata_pelajaran) . '</td>';
+                echo '<td align="center">' . htmlspecialchars($row->jenis_ujian) . '</td>';
+                echo '<td align="right">' . htmlspecialchars($row->nilai) . '</td>';
+                echo '</tr>';
             }
 
-            fclose($file);
+            echo '</table>';
+            echo '</body></html>';
         };
 
         return response()->stream($callback, 200, $headers);
