@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $profil->nama_yayasan ?? 'SMA ZIYADATUL ILMI' }}</title>
+    <title>{{ $profil->nama_yayasan ?? 'Pondok Pesantren ZIYADATUL ILMI' }}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
