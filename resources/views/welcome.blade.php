@@ -21,7 +21,7 @@
 </div>
 
                 <div>
-                    <h1 class="text-base md:text-lg font-bold uppercase leading-tight tracking-wide">{{ $profil->nama_yayasan ?? 'SMA ZIYADATUL ILMI' }}</h1>
+                    <h1 class="text-base md:text-lg font-bold uppercase leading-tight tracking-wide">{{ $profil->nama_yayasan ?? 'ZIYADATUL ILMI' }}</h1>
                     <p class="text-xs text-gray-200">NPSN: {{ $profil->nsp ?? '510036730333' }} - SWASTA</p>
                 </div>
             </div>
