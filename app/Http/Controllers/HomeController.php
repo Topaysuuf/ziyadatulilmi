@@ -57,11 +57,14 @@ class HomeController extends Controller
     /**
      * 2. Detail Profil Yayasan
      */
-    public function detailProfil($slug)
+    public function detailProfil($slug = 'identitas-sekolah')
     {
-        return view('profil', compact('slug'));
-    }
+        if (view()->exists('profil')) {
+            return view('profil', compact('slug'));
+        }
 
+        return redirect()->route('home');
+    }
     /**
      * 3. Cek Absensi Publik (/absensi)
      */
