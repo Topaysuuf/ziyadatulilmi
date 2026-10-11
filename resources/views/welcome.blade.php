@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $profil->nama_yayasan ?? 'Pondok Pesantren ZIYADATUL ILMI' }}</title>
+    <title>{{ $profil->nama_yayasan ?? 'SMA ZIYADATUL ILMI' }}</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -70,7 +70,7 @@
     <section id="beranda" class="bg-gradient-to-r from-[#00381b] to-[#006631] text-white py-20 text-center">
         <div class="container mx-auto px-4 max-w-3xl">
             <span class="bg-[#002411] text-yellow-300 text-xs px-3.5 py-1.5 rounded-full uppercase font-bold tracking-wider border border-yellow-400/30">Portal Resmi Yayasan</span>
-            <h2 class="text-3xl md:text-5xl font-extrabold mt-4 mb-4 leading-tight">Selamat Datang di {{ $profil->nama_yayasan ?? 'SMA ZIYADATUL ILMI' }}</h2>
+            <h2 class="text-3xl md:text-5xl font-extrabold mt-4 mb-4 leading-tight">Selamat Datang di {{ $profil->nama_yayasan ?? 'Pondok Pesantren ZIYADATUL ILMI' }}</h2>
             <p class="text-emerald-100 text-base md:text-lg mb-8">
                 Pimpinan: <span class="font-semibold text-white">{{ $profil->pimpinan ?? 'KH. Zainuri Yasmin, S.Ag. M.Pd.' }}</span>
             </p>
