@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RaportController;
 
-
+Route::get('/profil/{slug}', [HomeController::class, 'detailProfil'])->name('profil.detail');
 // Route E-Raport Siswa
 Route::get('/raport/{siswa_id}', [RaportController::class, 'show'])->name('raport.show');
 
