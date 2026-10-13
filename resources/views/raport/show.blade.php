@@ -3,123 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Raport Digital</title>
+    <title>E-Raport Digital - {{ $siswa->nama ?? 'Siswa' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
-            .no-print { display: none !important; }
-            body { background-color: white !important; padding: 0 !important; margin: 0 !important; }
-            .print-container { max-width: 100% !important; width: 100% !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+            }
+            .print-card {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 md:p-6 text-gray-800">
+<body class="bg-gray-100 text-gray-800 py-8">
 
-    <div class="max-w-4xl mx-auto">
-        <!-- Tombol Cetak & Kembali -->
-        <div class="no-print flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <div>
-                <h1 class="text-xl font-bold text-gray-800">E-Raport Digital</h1>
-                <p class="text-sm text-gray-500">Laporan Hasil Belajar Siswa</p>
-            </div>
-            <div class="flex gap-2">
-                <a href="javascript:history.back()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium transition">
-                    ← Kembali
-                </a>
-                <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow hover:bg-blue-700 transition flex items-center gap-2">
-                    🖨️ Cetak Raport / Simpan PDF
-                </button>
-            </div>
+    <!-- Tombol Aksi (Kembali & Cetak) -->
+    <div class="max-w-4xl mx-auto px-4 mb-6 flex justify-between items-center no-print">
+        <div>
+            <h1 class="text-xl font-bold text-gray-800">E-Raport Digital</h1>
+            <p class="text-xs text-gray-500">Laporan Hasil Belajar Siswa</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ route('nilai') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-300 transition">
+                ← Kembali
+            </a>
+            <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-2 shadow-sm">
+                🖨️ Cetak Raport / Simpan PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Container Lembar Raport -->
+    <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200 print-card">
+        
+        <!-- Header Raport -->
+        <div class="text-center border-b-2 border-gray-800 pb-4 mb-6">
+            <h2 class="text-2xl font-extrabold uppercase tracking-wide text-gray-900">Laporan Hasil Belajar Siswa</h2>
+            <p class="text-xs font-semibold text-gray-600 uppercase tracking-widest mt-1">E-RAPORT DIGITAL SEKOLAH</p>
         </div>
 
-        <!-- Lembar Raport -->
-        <div class="print-container bg-white p-6 md:p-8 rounded-lg border border-gray-200 shadow-sm">
-            
-            <!-- Header Dokumen -->
-            <div class="border-b-2 border-gray-800 pb-3 mb-6 text-center">
-                <h2 class="text-2xl font-bold uppercase tracking-wider text-gray-900">LAPORAN HASIL BELAJAR SISWA</h2>
-                <p class="text-sm text-gray-600 uppercase">E-RAPORT DIGITAL SEKOLAH</p>
-            </div>
-
-            <!-- Identitas Siswa -->
-            <div class="grid grid-cols-2 gap-4 mb-6 text-sm text-gray-800">
-                <div>
-                    <table class="w-full text-left border-separate border-spacing-y-1">
-                        <tr>
-                            <td class="font-semibold w-32">Nama Siswa</td>
-                            <td>: {{ $siswa->nama ?? $siswa->nama_siswa ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="font-semibold">NISN / NIS</td>
-                            <td>: {{ $siswa->nisn ?? $siswa->nis ?? '-' }}</td>
-                        </tr>
-                    </table>
-                </div>
-                <div>
-                    <table class="w-full text-left border-separate border-spacing-y-1">
-                        <tr>
-                            <td class="font-semibold w-32">Kelas</td>
-                            <td>: {{ $siswa->kelas ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="font-semibold">Tahun Ajaran</td>
-                            <td>: {{ date('Y') }}/{{ date('Y')+1 }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Tabel Rekap Nilai -->
-            <div class="overflow-x-auto mb-8">
-                <table class="w-full border-collapse border border-gray-300 text-sm">
-                    <thead>
-                        <tr class="bg-gray-100 text-gray-800 font-semibold">
-                            <th class="border border-gray-300 px-3 py-2 text-center w-12">No</th>
-                            <th class="border border-gray-300 px-4 py-2 text-left">Mata Pelajaran</th>
-                            <th class="border border-gray-300 px-3 py-2 text-center w-28">Nilai Akhir</th>
-                            <th class="border border-gray-300 px-3 py-2 text-center w-24">Predikat</th>
-                            <th class="border border-gray-300 px-4 py-2 text-center w-36">Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if(isset($nilais) && count($nilais) > 0)
-                            @foreach($nilais as $index => $item)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="border border-gray-300 px-3 py-2 text-center">{{ $index + 1 }}</td>
-                                    <td class="border border-gray-300 px-4 py-2 font-medium text-gray-800">
-                                        {{ $item->mata_pelajaran ?? $item->nama_mapel ?? $item->mapel ?? 'Mata Pelajaran' }}
-                                    </td>
-                                    <td class="border border-gray-300 px-3 py-2 text-center font-bold text-gray-900">
-                                        {{ $item->nilai_akhir ?? $item->nilai ?? $item->skor ?? 0 }}
-                                    </td>
-                                    <td class="border border-gray-300 px-3 py-2 text-center font-semibold">-</td>
-                                    <td class="border border-gray-300 px-4 py-2 text-center text-gray-700">-</td>
-                                </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td colspan="5" class="border border-gray-300 px-4 py-6 text-center text-gray-500 italic">
-                                    Belum ada data nilai yang di-input oleh guru.
-                                </td>
-                            </tr>
-                        @endif
-                    </tbody>
+        <!-- Identitas Siswa -->
+        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+            <div>
+                <table class="w-full text-left">
+                    <tr>
+                        <td class="w-28 font-semibold text-gray-600 py-1">Nama Siswa</td>
+                        <td class="py-1">: <span class="font-bold text-gray-900">{{ $siswa->nama ?? '-' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold text-gray-600 py-1">NISN / NIS</td>
+                        <td class="py-1">: {{ $siswa->nisn ?? $siswa->nis ?? '-' }}</td>
+                    </tr>
                 </table>
             </div>
-
-            <!-- Kolom Tanda Tangan -->
-            <div class="grid grid-cols-2 text-center text-sm text-gray-800 mt-12 print:mt-16">
-                <div>
-                    <p class="mb-16">Orang Tua / Wali Siswa,</p>
-                    <p class="font-semibold text-gray-900">( .................................... )</p>
-                </div>
-                <div>
-                    <p class="mb-16">Wali Kelas,</p>
-                    <p class="font-semibold text-gray-900">( .................................... )</p>
-                </div>
+            <div>
+                <table class="w-full text-left">
+                    <tr>
+                        <td class="w-28 font-semibold text-gray-600 py-1">Kelas</td>
+                        <td class="py-1">: {{ $siswa->kelas ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold text-gray-600 py-1">Tahun Ajaran</td>
+                        <td class="py-1">: 2026/2027</td>
+                    </tr>
+                </table>
             </div>
-
         </div>
+
+        <!-- Tabel Nilai Siswa -->
+        <div class="overflow-x-auto mb-10">
+            <table class="w-full border-collapse border border-gray-300 text-sm">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-800">
+                        <th class="border border-gray-300 px-4 py-2.5 text-center w-12">No</th>
+                        <th class="border border-gray-300 px-4 py-2.5 text-left">Mata Pelajaran</th>
+                        <th class="border border-gray-300 px-4 py-2.5 text-center w-28">Nilai Akhir</th>
+                        <th class="border border-gray-300 px-4 py-2.5 text-center w-24">Predikat</th>
+                        <th class="border border-gray-300 px-4 py-2.5 text-center w-40">Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($nilais ?? [] as $index => $nilai)
+                        @php
+                            $score = $nilai->nilai;
+                            
+                            // Logika Otomatis Predikat & Keterangan Nilai
+                            if ($score >= 85) {
+                                $predikat = 'A';
+                                $keterangan = 'Sangat Baik';
+                            } elseif ($score >= 75) {
+                                $predikat = 'B';
+                                $keterangan = 'Baik (Tuntas)';
+                            } elseif ($score >= 65) {
+                                $predikat = 'C';
+                                $keterangan = 'Cukup';
+                            } else {
+                                $predikat = 'D';
+                                $keterangan = 'Perlu Bimbingan';
+                            }
+                        @endphp
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-300 px-4 py-2.5 text-center font-medium text-gray-600">{{ $index + 1 }}</td>
+                            <td class="border border-gray-300 px-4 py-2.5">
+                                <span class="font-semibold text-gray-900">{{ $nilai->mata_pelajaran }}</span>
+                                @if(!empty($nilai->jenis_ujian))
+                                    <span class="text-xs text-gray-500 font-mono ml-1">({{ $nilai->jenis_ujian }})</span>
+                                @endif
+                            </td>
+                            <td class="border border-gray-300 px-4 py-2.5 text-center font-bold text-gray-900">{{ $score }}</td>
+                            <td class="border border-gray-300 px-4 py-2.5 text-center font-bold text-gray-800">{{ $predikat }}</td>
+                            <td class="border border-gray-300 px-4 py-2.5 text-center text-gray-700">{{ $keterangan }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="border border-gray-300 px-4 py-6 text-center text-gray-400 italic">
+                                Belum ada data nilai yang diinput untuk santri/siswa ini.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tanda Tangan Wali Kelas & Orang Tua -->
+        <div class="grid grid-cols-2 gap-8 text-center text-sm pt-6">
+            <div>
+                <p class="text-gray-600 mb-16">Orang Tua / Wali Siswa,</p>
+                <p class="font-bold text-gray-900">( ............................................ )</p>
+            </div>
+            <div>
+                <p class="text-gray-600 mb-16">Wali Kelas,</p>
+                <p class="font-bold text-gray-900">( ............................................ )</p>
+            </div>
+        </div>
+
     </div>
 
 </body>
