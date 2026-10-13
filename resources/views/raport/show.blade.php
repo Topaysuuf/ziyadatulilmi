@@ -76,16 +76,15 @@
             </div>
         </div>
 
-        <!-- Tabel Nilai Siswa + Kolom KKM -->
+        <!-- Tabel Nilai Siswa (Tanpa Predikat, Keterangan Remedial untuk < KKM) -->
         <div class="overflow-x-auto mb-10">
             <table class="w-full border-collapse border border-gray-300 text-sm">
                 <thead>
                     <tr class="bg-gray-100 text-gray-800">
                         <th class="border border-gray-300 px-4 py-2.5 text-center w-12">No</th>
                         <th class="border border-gray-300 px-4 py-2.5 text-left">Mata Pelajaran</th>
-                        <th class="border border-gray-300 px-4 py-2.5 text-center w-20">KKM</th>
+                        <th class="border border-gray-300 px-4 py-2.5 text-center w-24">KKM</th>
                         <th class="border border-gray-300 px-4 py-2.5 text-center w-28">Nilai Akhir</th>
-                        <th class="border border-gray-300 px-4 py-2.5 text-center w-24">Predikat</th>
                         <th class="border border-gray-300 px-4 py-2.5 text-center w-40">Keterangan</th>
                     </tr>
                 </thead>
@@ -95,20 +94,8 @@
                             $score = $nilai->nilai;
                             $kkm = 75; // Nilai KKM Standar
                             
-                            // Logika Predikat & Keterangan berdasarkan KKM
-                            if ($score >= 85) {
-                                $predikat = 'A';
-                                $keterangan = 'Sangat Baik (Tuntas)';
-                            } elseif ($score >= $kkm) {
-                                $predikat = 'B';
-                                $keterangan = 'Baik (Tuntas)';
-                            } elseif ($score >= 65) {
-                                $predikat = 'C';
-                                $keterangan = 'Cukup (Belum Tuntas)';
-                            } else {
-                                $predikat = 'D';
-                                $keterangan = 'Perlu Bimbingan';
-                            }
+                            // Hanya tampilkan 'Remedial' jika nilai di bawah KKM
+                            $keterangan = $score < $kkm ? 'Remedial' : '-';
                         @endphp
                         <tr class="hover:bg-gray-50">
                             <td class="border border-gray-300 px-4 py-2.5 text-center font-medium text-gray-600">{{ $index + 1 }}</td>
@@ -120,12 +107,13 @@
                             </td>
                             <td class="border border-gray-300 px-4 py-2.5 text-center font-semibold text-gray-600">{{ $kkm }}</td>
                             <td class="border border-gray-300 px-4 py-2.5 text-center font-bold text-gray-900">{{ $score }}</td>
-                            <td class="border border-gray-300 px-4 py-2.5 text-center font-bold text-gray-800">{{ $predikat }}</td>
-                            <td class="border border-gray-300 px-4 py-2.5 text-center text-gray-700">{{ $keterangan }}</td>
+                            <td class="border border-gray-300 px-4 py-2.5 text-center font-semibold {{ $score < $kkm ? 'text-red-600' : 'text-gray-500' }}">
+                                {{ $keterangan }}
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="border border-gray-300 px-4 py-6 text-center text-gray-400 italic">
+                            <td colspan="5" class="border border-gray-300 px-4 py-6 text-center text-gray-400 italic">
                                 Belum ada data nilai yang diinput untuk santri/siswa ini.
                             </td>
                         </tr>
