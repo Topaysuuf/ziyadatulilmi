@@ -46,20 +46,13 @@
         <div class="mb-6">
             @php
                 $kelas = strtoupper($siswa->kelas ?? '');
-                // Menyesuaikan dengan nama file png di folder public/images/
                 $gambarKop = str_contains($kelas, 'SMP') ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
             @endphp
             <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" class="w-full h-auto object-contain">
         </div>
 
-        <!-- Judul Raport -->
-        <div class="text-center mb-6">
-            <h2 class="text-xl font-extrabold uppercase tracking-wide text-gray-900">LAPORAN HASIL BELAJAR SISWA</h2>
-            <p class="text-xs font-semibold text-gray-600 uppercase tracking-widest mt-1">E-RAPORT DIGITAL SEKOLAH</p>
-        </div>
-
-        <!-- Identitas Siswa -->
-        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+        <!-- Identitas Siswa (Langsung Muncul Setelah Kop) -->
+        <div class="grid grid-cols-2 gap-4 text-sm mb-6 pt-2">
             <div>
                 <table class="w-full text-left">
                     <tr>
