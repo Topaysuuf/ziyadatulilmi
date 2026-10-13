@@ -76,13 +76,14 @@
             </div>
         </div>
 
-        <!-- Tabel Nilai Siswa -->
+        <!-- Tabel Nilai Siswa + Kolom KKM -->
         <div class="overflow-x-auto mb-10">
             <table class="w-full border-collapse border border-gray-300 text-sm">
                 <thead>
                     <tr class="bg-gray-100 text-gray-800">
                         <th class="border border-gray-300 px-4 py-2.5 text-center w-12">No</th>
                         <th class="border border-gray-300 px-4 py-2.5 text-left">Mata Pelajaran</th>
+                        <th class="border border-gray-300 px-4 py-2.5 text-center w-20">KKM</th>
                         <th class="border border-gray-300 px-4 py-2.5 text-center w-28">Nilai Akhir</th>
                         <th class="border border-gray-300 px-4 py-2.5 text-center w-24">Predikat</th>
                         <th class="border border-gray-300 px-4 py-2.5 text-center w-40">Keterangan</th>
@@ -92,17 +93,18 @@
                     @forelse($nilais ?? [] as $index => $nilai)
                         @php
                             $score = $nilai->nilai;
+                            $kkm = 75; // Nilai KKM Standar
                             
-                            // Logika Otomatis Predikat & Keterangan Nilai
+                            // Logika Predikat & Keterangan berdasarkan KKM
                             if ($score >= 85) {
                                 $predikat = 'A';
-                                $keterangan = 'Sangat Baik';
-                            } elseif ($score >= 75) {
+                                $keterangan = 'Sangat Baik (Tuntas)';
+                            } elseif ($score >= $kkm) {
                                 $predikat = 'B';
                                 $keterangan = 'Baik (Tuntas)';
                             } elseif ($score >= 65) {
                                 $predikat = 'C';
-                                $keterangan = 'Cukup';
+                                $keterangan = 'Cukup (Belum Tuntas)';
                             } else {
                                 $predikat = 'D';
                                 $keterangan = 'Perlu Bimbingan';
@@ -116,13 +118,14 @@
                                     <span class="text-xs text-gray-500 font-mono ml-1">({{ $nilai->jenis_ujian }})</span>
                                 @endif
                             </td>
+                            <td class="border border-gray-300 px-4 py-2.5 text-center font-semibold text-gray-600">{{ $kkm }}</td>
                             <td class="border border-gray-300 px-4 py-2.5 text-center font-bold text-gray-900">{{ $score }}</td>
                             <td class="border border-gray-300 px-4 py-2.5 text-center font-bold text-gray-800">{{ $predikat }}</td>
                             <td class="border border-gray-300 px-4 py-2.5 text-center text-gray-700">{{ $keterangan }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="border border-gray-300 px-4 py-6 text-center text-gray-400 italic">
+                            <td colspan="6" class="border border-gray-300 px-4 py-6 text-center text-gray-400 italic">
                                 Belum ada data nilai yang diinput untuk santri/siswa ini.
                             </td>
                         </tr>
