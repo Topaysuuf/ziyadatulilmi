@@ -42,9 +42,19 @@
     <!-- Container Lembar Raport -->
     <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200 print-card">
         
-        <!-- Header Raport -->
-        <div class="text-center border-b-2 border-gray-800 pb-4 mb-6">
-            <h2 class="text-2xl font-extrabold uppercase tracking-wide text-gray-900">Laporan Hasil Belajar Siswa</h2>
+        <!-- Gambar Kop Surat Otomatis Sinkron SMP / SMA -->
+        <div class="mb-6">
+            @php
+                $kelas = strtoupper($siswa->kelas ?? '');
+                // Menyesuaikan dengan nama file png di folder public/images/
+                $gambarKop = str_contains($kelas, 'SMP') ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
+            @endphp
+            <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" class="w-full h-auto object-contain">
+        </div>
+
+        <!-- Judul Raport -->
+        <div class="text-center mb-6">
+            <h2 class="text-xl font-extrabold uppercase tracking-wide text-gray-900">LAPORAN HASIL BELAJAR SISWA</h2>
             <p class="text-xs font-semibold text-gray-600 uppercase tracking-widest mt-1">E-RAPORT DIGITAL SEKOLAH</p>
         </div>
 
@@ -76,7 +86,7 @@
             </div>
         </div>
 
-        <!-- Tabel Nilai Siswa (Tanpa Predikat, Keterangan Remedial untuk < KKM) -->
+        <!-- Tabel Nilai Siswa -->
         <div class="overflow-x-auto mb-10">
             <table class="w-full border-collapse border border-gray-300 text-sm">
                 <thead>
