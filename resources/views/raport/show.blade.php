@@ -100,23 +100,6 @@
             }
             
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
-
-            // Logika Deteksi Multi-Skenario Absensi dari Database
-            $siswaId = $siswa->id ?? 0;
-            $nisn = $siswa->nisn ?? $siswa->nis ?? '';
-            $namaSiswa = $siswa->nama ?? '';
-
-            // Query dasar yang fleksibel mencari via siswa_id, nisn, atau nama_siswa
-            $absensiQuery = \DB::table('absensis')->where(function($q) use ($siswaId, $nisn, $namaSiswa) {
-                $q->where('siswa_id', $siswaId);
-                if (!empty($nisn)) { $q->orWhere('nisn', $nisn); }
-                if (!empty($namaSiswa)) { $q->orWhere('nama', 'LIKE', '%'.$namaSiswa.'%')->orWhere('nama_siswa', 'LIKE', '%'.$namaSiswa.'%'); }
-            });
-
-            // Hitung Sakit, Izin, dan Alpa/Tanpa Keterangan
-            $realSakit = (clone $absensiQuery)->whereRaw('LOWER(status) IN (?, ?, ?)', ['sakit', 's', 'sick'])->count();
-            $realIzin  = (clone $absensiQuery)->whereRaw('LOWER(status) IN (?, ?, ?)', ['izin', 'i', 'ijin'])->count();
-            $realAlpa  = (clone $absensiQuery)->whereRaw('LOWER(status) IN (?, ?, ?, ?, ?)', ['alpa', 'tanpa keterangan', 'a', 'tk', 'alpha'])->count();
         @endphp
 
         <!-- Tabel Nilai Sesuai Inputan Manual Guru/Admin -->
@@ -218,7 +201,7 @@
                 </table>
             </div>
 
-            <!-- Table Ketidak Hadiran (Otomatis Sinkron dari Database Absensi) -->
+            <!-- Table Ketidak Hadiran (Diambil dari Controller) -->
             <div>
                 <table class="w-full border-collapse border border-gray-900">
                     <thead>
@@ -235,17 +218,17 @@
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">1</td>
                             <td class="border border-gray-900 px-3 py-1">Sakit</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $realSakit }}</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $sakit ?? 0 }}</td>
                         </tr>
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">2</td>
                             <td class="border border-gray-900 px-3 py-1">Izin</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $realIzin }}</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $izin ?? 0 }}</td>
                         </tr>
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">3</td>
                             <td class="border border-gray-900 px-3 py-1">Tanpa Keterangan</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $realAlpa }}</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $alpa ?? 0 }}</td>
                         </tr>
                     </tbody>
                 </table>

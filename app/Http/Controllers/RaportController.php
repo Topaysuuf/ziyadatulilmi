@@ -19,31 +19,26 @@ class RaportController extends Controller
         // 2. Ambil data nilai siswa
         $nilais = DB::table('nilais')->where('siswa_id', $id)->get();
 
-        // 3. Hitung otomatis rekap absensi dari database (Flexible Case & Values)
-        $sakit = DB::table('absensis')
-            ->where('siswa_id', $id)
-            ->where(function($q) {
-                $q->whereRaw('LOWER(status) = ?', ['sakit'])
-                  ->orWhereRaw('LOWER(status) = ?', ['s']);
-            })
-            ->count();
+        // 3. Ambil data absensi siswa (Aman untuk MySQL & SQLite)
+        $absensis = DB::table('absensis')->where('siswa_id', $id)->get();
 
-        $izin = DB::table('absensis')
-            ->where('siswa_id', $id)
-            ->where(function($q) {
-                $q->whereRaw('LOWER(status) = ?', ['izin'])
-                  ->orWhereRaw('LOWER(status) = ?', ['i']);
-            })
-            ->count();
+        // 4. Hitung rekap absensi menggunakan filter PHP (Bebas dari error SQL 500)
+        $sakit = $absensis->filter(function($a) {
+            $status = strtolower(trim($a->status ?? ''));
+            return in_array($status, ['sakit', 's']);
+        })->count();
 
-        $alpa = DB::table('absensis')
-            ->where('siswa_id', $id)
-            ->where(function($q) {
-                $q->whereRaw('LOWER(status) IN (?, ?, ?, ?)', ['alpa', 'tanpa keterangan', 'a', 'tk']);
-            })
-            ->count();
+        $izin = $absensis->filter(function($a) {
+            $status = strtolower(trim($a->status ?? ''));
+            return in_array($status, ['izin', 'ijin', 'i']);
+        })->count();
 
-        // 4. Kirim semua variabel ke view raport.show
+        $alpa = $absensis->filter(function($a) {
+            $status = strtolower(trim($a->status ?? ''));
+            return in_array($status, ['alpa', 'alpha', 'tanpa keterangan', 'a', 'tk']);
+        })->count();
+
+        // 5. Kirim semua variabel ke view raport.show
         return view('raport.show', compact('siswa', 'nilais', 'sakit', 'izin', 'alpa'));
     }
 }
