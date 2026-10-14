@@ -98,55 +98,19 @@
         </div>
 
         @php
-            // Memetakan Nilai berdasarkan Nama Mapel
-            $nilaiMap = [];
             $totalNilai = 0;
             $countNilai = 0;
-            
+            $kkmDefault = 75;
+
             foreach($nilais ?? [] as $n) {
-                $nilaiMap[$n->mata_pelajaran] = $n->nilai;
                 $totalNilai += $n->nilai;
                 $countNilai++;
             }
             
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
-            $kkmDefault = 75;
-
-            // Daftar Mapel Pesantren
-            $mapelPesantren = [
-                'Nahwu Jurumiyah',
-                'Nahwu Imriti',
-                'Durusulfiqiyah',
-                'Akhlaqul Banin',
-                'B. Arab',
-                'Taqrib/Matan',
-                'Minhussaniyah'
-            ];
-
-            // Daftar Mapel Umum
-            $mapelUmum = [
-                'Pendidikan Agama Islam dan Budi Pekerti',
-                'Pendidikan Pancasila dan Kewarganegaraan',
-                'Bahasa Indonesia',
-                'Matematika',
-                'Ilmu Pengetahuan Alam',
-                'Ilmu Pengetahuan Sosial',
-                'Bahasa Inggris',
-                'Pendidikan Jasmani Olahraga dan Kesehatan',
-                'Informatika',
-                'Seni Budaya'
-            ];
-
-            // Daftar Mapel Jurusan
-            $mapelJurusan = [
-                'Sosiologi',
-                'Sejarah',
-                'Geografi',
-                'Ekonomi'
-            ];
         @endphp
 
-        <!-- Tabel Nilai Utama Sesuai Format Gambar -->
+        <!-- Tabel Nilai Dinamis Sesuai Inputan Guru/Admin -->
         <div class="overflow-x-auto mb-6">
             <table class="w-full border-collapse border border-gray-900 text-xs md:text-sm">
                 <thead>
@@ -162,72 +126,49 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- A. Muatan Lokal Pesantren -->
-                    <tr class="bg-gray-200 font-bold">
-                        <td class="border border-gray-900 px-2 py-1.5 text-center">A</td>
-                        <td class="border border-gray-900 px-3 py-1.5" colspan="4">Muatan Lokal Pesantren</td>
-                    </tr>
-                    @foreach($mapelPesantren as $idx => $mapel)
+                    @forelse($nilais ?? [] as $index => $nilai)
                         @php
-                            $val = $nilaiMap[$mapel] ?? null;
-                            $capaian = $val ? ($val >= $kkmDefault ? "Menunjukkan penguasaan yang baik dalam memahami materi $mapel." : "Perlu bimbingan lebih lanjut dalam memahami materi $mapel.") : '';
+                            $score = $nilai->nilai;
+                            $mapel = $nilai->mata_pelajaran;
+                            
+                            // Deskripsi Capaian Kompetensi Otomatis berdasarkan Nilai yang diinput
+                            if ($score >= 85) {
+                                $capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
+                            } elseif ($score >= $kkmDefault) {
+                                $capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $mapel.";
+                            } else {
+                                $capaian = "Perlu bimbingan dan pendampingan khusus dalam memahami materi $mapel.";
+                            }
                         @endphp
                         <tr>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center">{{ $idx + 1 }}</td>
-                            <td class="border border-gray-900 px-3 py-1.5">{{ $mapel }}</td>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center">{{ $val ? $kkmDefault : '' }}</td>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $val ?? '' }}</td>
-                            <td class="border border-gray-900 px-3 py-1.5 text-xs">{{ $capaian }}</td>
+                            <td class="border border-gray-900 px-2 py-1.5 text-center font-medium">{{ $index + 1 }}</td>
+                            <td class="border border-gray-900 px-3 py-1.5 font-semibold text-gray-900">
+                                {{ $mapel }}
+                                @if(!empty($nilai->jenis_ujian))
+                                    <span class="text-xs text-gray-500 font-normal">({{ $nilai->jenis_ujian }})</span>
+                                @endif
+                            </td>
+                            <td class="border border-gray-900 px-2 py-1.5 text-center font-semibold text-gray-700">{{ $kkmDefault }}</td>
+                            <td class="border border-gray-900 px-2 py-1.5 text-center font-bold text-gray-900">{{ $score }}</td>
+                            <td class="border border-gray-900 px-3 py-1.5 text-xs text-gray-800">{{ $capaian }}</td>
                         </tr>
-                    @endforeach
-
-                    <!-- B. Mata Pelajaran Umum -->
-                    <tr class="bg-gray-200 font-bold">
-                        <td class="border border-gray-900 px-2 py-1.5 text-center">B</td>
-                        <td class="border border-gray-900 px-3 py-1.5" colspan="4">Mata Pelajaran Umum</td>
-                    </tr>
-                    @foreach($mapelUmum as $idx => $mapel)
-                        @php
-                            $val = $nilaiMap[$mapel] ?? null;
-                            $capaian = $val ? ($val >= $kkmDefault ? "Menunjukkan penguasaan yang baik dalam memahami materi $mapel." : "Perlu bimbingan lebih lanjut dalam memahami materi $mapel.") : '';
-                        @endphp
+                    @empty
                         <tr>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center">{{ $idx + 1 }}</td>
-                            <td class="border border-gray-900 px-3 py-1.5">{{ $mapel }}</td>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center">{{ $val ? $kkmDefault : '' }}</td>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $val ?? '' }}</td>
-                            <td class="border border-gray-900 px-3 py-1.5 text-xs">{{ $capaian }}</td>
+                            <td colspan="5" class="border border-gray-900 px-4 py-6 text-center text-gray-400 italic">
+                                Belum ada data nilai yang diinput oleh guru/admin.
+                            </td>
                         </tr>
-                    @endforeach
-
-                    <!-- C. Mata Pelajaran Jurusan -->
-                    <tr class="bg-gray-200 font-bold">
-                        <td class="border border-gray-900 px-2 py-1.5 text-center">C</td>
-                        <td class="border border-gray-900 px-3 py-1.5" colspan="4">Mata Pelajaran Jurusan</td>
-                    </tr>
-                    @foreach($mapelJurusan as $idx => $mapel)
-                        @php
-                            $val = $nilaiMap[$mapel] ?? null;
-                            $capaian = $val ? ($val >= $kkmDefault ? "Menunjukkan penguasaan yang baik dalam memahami materi $mapel." : "Perlu bimbingan lebih lanjut dalam memahami materi $mapel.") : '';
-                        @endphp
-                        <tr>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center">{{ $idx + 1 }}</td>
-                            <td class="border border-gray-900 px-3 py-1.5">{{ $mapel }}</td>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center">{{ $val ? $kkmDefault : '' }}</td>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $val ?? '' }}</td>
-                            <td class="border border-gray-900 px-3 py-1.5 text-xs">{{ $capaian }}</td>
-                        </tr>
-                    @endforeach
+                    @endforelse
 
                     <!-- Summary / Total & Rata-rata -->
                     <tr class="font-bold bg-gray-50">
-                        <td colspan="3" class="border border-gray-900 px-3 py-1.5">Jumlah Nilai</td>
-                        <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $totalNilai > 0 ? $totalNilai : '' }}</td>
+                        <td colspan="3" class="border border-gray-900 px-3 py-1.5 text-right">Jumlah Nilai :</td>
+                        <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $totalNilai > 0 ? $totalNilai : '-' }}</td>
                         <td class="border border-gray-900 px-3 py-1.5"></td>
                     </tr>
                     <tr class="font-bold bg-gray-50">
-                        <td colspan="3" class="border border-gray-900 px-3 py-1.5">Nilai Rata-rata Mata Pelajaran</td>
-                        <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $rataRata > 0 ? $rataRata : '' }}</td>
+                        <td colspan="3" class="border border-gray-900 px-3 py-1.5 text-right">Nilai Rata-rata Mata Pelajaran :</td>
+                        <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $rataRata > 0 ? $rataRata : '-' }}</td>
                         <td class="border border-gray-900 px-3 py-1.5"></td>
                     </tr>
                 </tbody>
