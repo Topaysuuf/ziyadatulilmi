@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Siswa;
-use App\Models\Nilai;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RaportController extends Controller
 {
-    public function show($siswa_id)
+    public function show($id)
     {
-        // 1. Ambil data siswa (Gunakan find agar tidak memicu 500 jika ID tidak ada)
-        $siswa = Siswa::find($siswa_id);
+        $siswa = DB::table('siswas')->where('id', $id)->first();
+        $nilais = DB::table('nilais')->where('siswa_id', $id)->get();
 
-        if (!$siswa) {
-            return response("Data siswa dengan ID {$siswa_id} tidak ditemukan di database.", 404);
-        }
+        // Hitung total ketidakhadiran secara otomatis dari tabel absensis
+        $sakit = DB::table('absensis')->where('siswa_id', $id)->where('status', 'Sakit')->count();
+        $izin  = DB::table('absensis')->where('siswa_id', $id)->where('status', 'Izin')->count();
+        $alpa  = DB::table('absensis')->where('siswa_id', $id)->whereIn('status', ['Alpa', 'Tanpa Keterangan'])->count();
 
-        // 2. Ambil data nilai secara independen dari tabel nilais
-        $nilais = Nilai::where('siswa_id', $siswa_id)->get();
-
-        // 3. Render ke view
-        return view('raport.show', compact('siswa', 'nilais'));
+        return view('raport.show', compact('siswa', 'nilais', 'sakit', 'izin', 'alpa'));
     }
 }

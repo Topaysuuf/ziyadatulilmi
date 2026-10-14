@@ -7,17 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
-            .no-print {
-                display: none !important;
-            }
-            body {
-                background: white !important;
-            }
-            .print-card {
-                box-shadow: none !important;
-                border: none !important;
-                padding: 0 !important;
-            }
+            .no-print { display: none !important; }
+            body { background: white !important; }
+            .print-card { box-shadow: none !important; border: none !important; padding: 0 !important; }
         }
     </style>
 </head>
@@ -108,9 +100,15 @@
             }
             
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
+
+            // Logika Otomatis Hitung Rekap Absensi Langsung di View
+            $siswaId = $siswa->id ?? 0;
+            $countSakit = \DB::table('absensis')->where('siswa_id', $siswaId)->where('status', 'Sakit')->count();
+            $countIzin  = \DB::table('absensis')->where('siswa_id', $siswaId)->where('status', 'Izin')->count();
+            $countAlpa  = \DB::table('absensis')->where('siswa_id', $siswaId)->whereIn('status', ['Alpa', 'Tanpa Keterangan', 'A'])->count();
         @endphp
 
-        <!-- Tabel Nilai Dinamis Sesuai Inputan Guru/Admin -->
+        <!-- Tabel Nilai Sesuai Inputan Manual Guru/Admin -->
         <div class="overflow-x-auto mb-6">
             <table class="w-full border-collapse border border-gray-900 text-xs md:text-sm">
                 <thead>
@@ -131,7 +129,6 @@
                             $score = $nilai->nilai;
                             $mapel = $nilai->mata_pelajaran;
                             
-                            // Deskripsi Capaian Kompetensi Otomatis berdasarkan Nilai yang diinput
                             if ($score >= 85) {
                                 $capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
                             } elseif ($score >= $kkmDefault) {
@@ -210,7 +207,7 @@
                 </table>
             </div>
 
-            <!-- Table Ketidak Hadiran -->
+            <!-- Table Ketidak Hadiran (Otomatis Sinkron dari Database Absensi) -->
             <div>
                 <table class="w-full border-collapse border border-gray-900">
                     <thead>
@@ -227,17 +224,17 @@
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">1</td>
                             <td class="border border-gray-900 px-3 py-1">Sakit</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">0</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $countSakit }}</td>
                         </tr>
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">2</td>
                             <td class="border border-gray-900 px-3 py-1">Izin</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">0</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $countIzin }}</td>
                         </tr>
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">3</td>
                             <td class="border border-gray-900 px-3 py-1">Tanpa Keterangan</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">0</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $countAlpa }}</td>
                         </tr>
                     </tbody>
                 </table>
