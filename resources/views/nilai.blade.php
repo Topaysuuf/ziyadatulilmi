@@ -48,7 +48,7 @@
                 <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
                     <i class="fa-solid fa-graduation-cap text-[#004d25]"></i> Kelola Ujian & Nilai Santri
                 </h1>
-                <p class="text-gray-500 text-sm mt-1">Pilih mata pelajaran dari daftar untuk memasukkan nilai ujian santri.</p>
+                <p class="text-gray-500 text-sm mt-1">Ketik nama mata pelajaran dan masukkan nilai ujian santri.</p>
             </div>
         </div>
 
@@ -59,7 +59,7 @@
         @endif
 
         @auth
-        <!-- Form Input Nilai dengan Dropdown Mata Pelajaran -->
+        <!-- Form Input Nilai (Manual Text Input) -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
             <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
                 <i class="fa-solid fa-pen-to-square text-[#004d25]"></i> Form Input Nilai Siswa
@@ -80,50 +80,18 @@
                         </select>
                     </div>
 
-                    <!-- Dropdown Mata Pelajaran (Kategori Pesantren, Umum, Jurusan) -->
+                    <!-- Input Teks Mata Pelajaran (Ketik Manual) -->
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mata Pelajaran</label>
-                        <select name="mata_pelajaran" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
-                            <option value="">-- Pilih Mata Pelajaran --</option>
-                            
-                            <optgroup label="--- A. MUATAN LOKAL PESANTREN ---">
-                                <option value="Nahwu Jurumiyah">Nahwu Jurumiyah</option>
-                                <option value="Nahwu Imriti">Nahwu Imriti</option>
-                                <option value="Durusulfiqiyah">Durusulfiqiyah</option>
-                                <option value="Akhlaqul Banin">Akhlaqul Banin</option>
-                                <option value="B. Arab">B. Arab</option>
-                                <option value="Taqrib/Matan">Taqrib/Matan</option>
-                                <option value="Minhussaniyah">Minhussaniyah</option>
-                            </optgroup>
-
-                            <optgroup label="--- B. MATA PELAJARAN UMUM ---">
-                                <option value="Pendidikan Agama Islam dan Budi Pekerti">Pendidikan Agama Islam dan Budi Pekerti</option>
-                                <option value="Pendidikan Pancasila dan Kewarganegaraan">Pendidikan Pancasila dan Kewarganegaraan</option>
-                                <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                                <option value="Matematika">Matematika</option>
-                                <option value="Ilmu Pengetahuan Alam">Ilmu Pengetahuan Alam</option>
-                                <option value="Ilmu Pengetahuan Sosial">Ilmu Pengetahuan Sosial</option>
-                                <option value="Bahasa Inggris">Bahasa Inggris</option>
-                                <option value="Pendidikan Jasmani Olahraga dan Kesehatan">Pendidikan Jasmani Olahraga dan Kesehatan</option>
-                                <option value="Informatika">Informatika</option>
-                                <option value="Seni Budaya">Seni Budaya</option>
-                            </optgroup>
-
-                            <optgroup label="--- C. MATA PELAJARAN JURUSAN ---">
-                                <option value="Sosiologi">Sosiologi</option>
-                                <option value="Sejarah">Sejarah</option>
-                                <option value="Geografi">Geografi</option>
-                                <option value="Ekonomi">Ekonomi</option>
-                            </optgroup>
-                        </select>
+                        <input type="text" name="mata_pelajaran" placeholder="Contoh: Pendidikan Agama Islam / Matematika" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none">
                     </div>
 
                     <!-- Jenis Ujian -->
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jenis Ujian</label>
                         <select name="jenis_ujian" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
-                            <option value="ASTS">ASTS (Asesmen Sumatif Tengah Semester / UTS)</option>
-                            <option value="ASAS">ASAS (Asesmen Sumatif Akhir Semester / UAS)</option>
+                            <option value="UTS">UTS / ASTS</option>
+                            <option value="UAS">UAS / ASAS</option>
                             <option value="Ulangan Harian">Ulangan Harian</option>
                             <option value="Tugas">Tugas</option>
                         </select>
@@ -132,7 +100,7 @@
                     <!-- Nilai -->
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nilai (0-100)</label>
-                        <input type="number" name="nilai" min="0" max="100" placeholder="Contoh: 85" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none">
+                        <input type="number" name="nilai" min="0" max="100" placeholder="85" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none">
                     </div>
 
                 </div>
