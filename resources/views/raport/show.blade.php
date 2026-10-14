@@ -6,42 +6,62 @@
     <title>E-Raport Digital - {{ $siswa->nama ?? 'Siswa' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
+        }
         @media print {
             .no-print { display: none !important; }
-            body { background: white !important; }
-            .print-card { box-shadow: none !important; border: none !important; padding: 0 !important; }
+            body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .print-card { 
+                box-shadow: none !important; 
+                border: none !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .page-break-inside-avoid {
+                page-break-inside: avoid;
+            }
         }
         table.no-border, table.no-border td {
             border: none !important;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 py-8">
+<body class="bg-gray-100 text-gray-800 py-6">
 
     <!-- Tombol Aksi (Kembali, Cetak PDF, & Download Word) -->
-    <div class="max-w-5xl mx-auto px-4 mb-6 flex justify-between items-center no-print">
+    <div class="max-w-4xl mx-auto px-4 mb-4 flex justify-between items-center no-print">
         <div>
             <h1 class="text-xl font-bold text-gray-800">E-Raport Digital</h1>
             <p class="text-xs text-gray-500">Laporan Hasil Belajar Siswa</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route('nilai') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-300 transition">
+            <a href="{{ route('nilai') }}" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-300 transition">
                 ← Kembali
             </a>
-            <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-2 shadow-sm">
-                🖨️ Cetak PDF
+            <button onclick="window.print()" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
+                🖨️ Cetak PDF (1 Halaman)
             </button>
-            <button onclick="exportHTMLToWord()" class="bg-blue-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-900 transition flex items-center gap-2 shadow-sm">
+            <button onclick="exportHTMLToWord()" class="bg-blue-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-900 transition flex items-center gap-1.5 shadow-sm">
                 📄 Download Word (.doc)
             </button>
         </div>
     </div>
 
-    <!-- Container Lembar Raport -->
-    <div id="raport-content" class="max-w-5xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200 print-card">
+    <!-- Container Lembar Raport (Layout Dipadatkan untuk 1 Lembar) -->
+    <div id="raport-content" class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 print-card page-break-inside-avoid">
         
-        <!-- Gambar Kop Surat Otomatis Sinkron SMP / SMA -->
-        <div class="mb-6">
+        <!-- Gambar Kop Surat -->
+        <div class="mb-3">
             @php
                 $kelas = strtoupper($siswa->kelas ?? '');
                 $isSmp = str_contains($kelas, 'SMP') \vert{}\vert{} str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') \vert{}\vert{} str_contains($kelas, 'IX');
@@ -51,46 +71,46 @@
             <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%;">
         </div>
 
-        <!-- Identitas Siswa (Murni Menggunakan Tabel HTML Tanpa Border untuk Kompatibilitas Word) -->
-        <table class="no-border" style="width: 100%; border: none; margin-bottom: 20px; font-size: 13px;">
+        <!-- Identitas Siswa -->
+        <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px; font-size: 11px; line-height: 1.3;">
             <tr>
-                <td style="width: 50%; vertical-align: top; padding: 0 10px 0 0;">
+                <td style="width: 50%; vertical-align: top; padding: 0 5px 0 0;">
                     <table class="no-border" style="width: 100%; border: none;">
                         <tr>
-                            <td style="width: 110px; font-weight: bold; color: #374151; padding: 3px 0;">Nama</td>
-                            <td style="padding: 3px 0;">: <span style="font-weight: bold; color: #111827; text-transform: uppercase;">{{ $siswa->nama ?? '-' }}</span></td>
+                            <td style="width: 95px; font-weight: bold; color: #374151; padding: 1px 0;">Nama</td>
+                            <td style="padding: 1px 0;">: <span style="font-weight: bold; color: #111827; text-transform: uppercase;">{{ $siswa->nama ?? '-' }}</span></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">NISN / NIS</td>
-                            <td style="padding: 3px 0;">: {{ $siswa->nisn ?? $siswa->nis ?? '-' }}</td>
+                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">NISN / NIS</td>
+                            <td style="padding: 1px 0;">: {{ $siswa->nisn ?? $siswa->nis ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Nama Sekolah</td>
-                            <td style="padding: 3px 0;">: {{ $isSmp ? 'SMP ZIYADATUL ILMI KOTA SERANG' : 'SMA ZIYADATUL ILMI KOTA SERANG' }}</td>
+                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Nama Sekolah</td>
+                            <td style="padding: 1px 0;">: {{ $isSmp ? 'SMP ZIYADATUL ILMI KOTA SERANG' : 'SMA ZIYADATUL ILMI KOTA SERANG' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Alamat</td>
-                            <td style="padding: 3px 0;">: Jl. Nancang Wetan, Karundang, Cipocok Jaya</td>
+                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Alamat</td>
+                            <td style="padding: 1px 0;">: Jl. Nancang Wetan, Karundang, Cipocok Jaya</td>
                         </tr>
                     </table>
                 </td>
-                <td style="width: 50%; vertical-align: top; padding: 0 0 0 10px;">
+                <td style="width: 50%; vertical-align: top; padding: 0 0 0 5px;">
                     <table class="no-border" style="width: 100%; border: none;">
                         <tr>
-                            <td style="width: 110px; font-weight: bold; color: #374151; padding: 3px 0;">Kelas</td>
-                            <td style="padding: 3px 0;">: <span style="font-weight: bold;">{{ $siswa->kelas ?? '-' }}</span></td>
+                            <td style="width: 95px; font-weight: bold; color: #374151; padding: 1px 0;">Kelas</td>
+                            <td style="padding: 1px 0;">: <span style="font-weight: bold;">{{ $siswa->kelas ?? '-' }}</span></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Fase</td>
-                            <td style="padding: 3px 0;">: {{ $fase }}</td>
+                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Fase</td>
+                            <td style="padding: 1px 0;">: {{ $fase }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Semester</td>
-                            <td style="padding: 3px 0;">: 1 (Satu) / Ganjil</td>
+                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Semester</td>
+                            <td style="padding: 1px 0;">: 1 (Satu) / Ganjil</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Tahun Pelajaran</td>
-                            <td style="padding: 3px 0;">: 2026/2027</td>
+                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Tahun Pelajaran</td>
+                            <td style="padding: 1px 0;">: 2026/2027</td>
                         </tr>
                     </table>
                 </td>
@@ -110,19 +130,19 @@
             $rataRata =$countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
         @endphp
 
-        <!-- Tabel Nilai Utama Sesuai Format -->
-        <div class="overflow-x-auto mb-6">
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 13px;">
+        <!-- Tabel Nilai Utama -->
+        <div style="margin-bottom: 12px;">
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 11px;">
                 <thead>
                     <tr style="background-color: #d1d5db; color: #000; font-weight: bold;">
-                        <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: center; width: 40px; vertical-align: middle;">NO.</th>
-                        <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: center; vertical-align: middle;">Nama Pelajaran</th>
-                        <th colspan="3" style="border: 1px solid #000; padding: 4px; text-align: center;">Nilai Murni ASTS</th>
+                        <th rowspan="2" style="border: 1px solid #000; padding: 4px; text-align: center; width: 30px; vertical-align: middle;">NO.</th>
+                        <th rowspan="2" style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">Nama Pelajaran</th>
+                        <th colspan="3" style="border: 1px solid #000; padding: 2px; text-align: center;">Nilai Murni ASTS</th>
                     </tr>
                     <tr style="background-color: #d1d5db; color: #000; font-weight: bold;">
-                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 60px;">KKM</th>
-                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 70px;">NILAI</th>
-                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 50%;">CAPAIAN KOMPETENSI</th>
+                        <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 45px;">KKM</th>
+                        <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 50px;">NILAI</th>
+                        <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 50%;">CAPAIAN KOMPETENSI</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -138,20 +158,20 @@
                             }
                         @endphp
                         <tr>
-                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">{{ $index + 1 }}</td>
-                            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">
+                            <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $index + 1 }}</td>
+                            <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">
                                 {{ $mapel }}
                                 @if(!empty($nilai->jenis_ujian))
-                                    <span style="font-size: 11px; font-weight: normal; color: #4b5563;">({{ $nilai->jenis_ujian }})</span>
+                                    <span style="font-size: 10px; font-weight: normal; color: #4b5563;">({{ $nilai->jenis_ujian }})</span>
                                 @endif
                             </td>
-                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">{{ $kkmDefault }}</td>
-                            <td style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold;">{{ $score }}</td>
-                            <td style="border: 1px solid #000; padding: 6px; font-size: 12px;">{{ $capaian }}</td>
+                            <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $kkmDefault }}</td>
+                            <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">{{ $score }}</td>
+                            <td style="border: 1px solid #000; padding: 4px; font-size: 10px; line-height: 1.2;">{{ $capaian }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" style="border: 1px solid #000; padding: 12px; text-align: center; color: #9ca3af; font-style: italic;">
+                            <td colspan="5" style="border: 1px solid #000; padding: 8px; text-align: center; color: #9ca3af; font-style: italic;">
                                 Belum ada data nilai yang diinput oleh guru/admin.
                             </td>
                         </tr>
@@ -159,83 +179,83 @@
 
                     <!-- Summary / Total & Rata-rata -->
                     <tr style="font-weight: bold; background-color: #f9fafb;">
-                        <td colspan="3" style="border: 1px solid #000; padding: 6px; text-align: right;">Jumlah Nilai :</td>
-                        <td style="border: 1px solid #000; padding: 6px; text-align: center;">{{ $totalNilai > 0 ?$totalNilai : '-' }}</td>
-                        <td style="border: 1px solid #000; padding: 6px;"></td>
+                        <td colspan="3" style="border: 1px solid #000; padding: 4px; text-align: right;">Jumlah Nilai :</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $totalNilai > 0 ?$totalNilai : '-' }}</td>
+                        <td style="border: 1px solid #000; padding: 4px;"></td>
                     </tr>
                     <tr style="font-weight: bold; background-color: #f9fafb;">
-                        <td colspan="3" style="border: 1px solid #000; padding: 6px; text-align: right;">Nilai Rata-rata Mata Pelajaran :</td>
-                        <td style="border: 1px solid #000; padding: 6px; text-align: center;">{{ $rataRata > 0 ?$rataRata : '-' }}</td>
-                        <td style="border: 1px solid #000; padding: 6px;"></td>
+                        <td colspan="3" style="border: 1px solid #000; padding: 4px; text-align: right;">Nilai Rata-rata Mata Pelajaran :</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $rataRata > 0 ?$rataRata : '-' }}</td>
+                        <td style="border: 1px solid #000; padding: 4px;"></td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
         <!-- Tabel Kepribadian & Ketidak Hadiran -->
-        <table class="no-border" style="width: 100%; border: none; margin-bottom: 20px; font-size: 13px;">
+        <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px; font-size: 11px;">
             <tr>
                 <!-- Table Kepribadian -->
-                <td style="width: 48%; vertical-align: top; padding: 0 1% 0 0;">
+                <td style="width: 49%; vertical-align: top; padding: 0 1% 0 0;">
                     <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
                         <thead>
                             <tr style="background-color: #d1d5db; font-weight: bold;">
-                                <th colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center;">KEPRIBADIAN</th>
+                                <th colspan="3" style="border: 1px solid #000; padding: 3px; text-align: center;">KEPRIBADIAN</th>
                             </tr>
                             <tr style="background-color: #e5e7eb; font-weight: bold;">
-                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 35px;">NO.</th>
-                                <th style="border: 1px solid #000; padding: 4px; text-align: center;">ASPEK</th>
-                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 50px;">NILAI</th>
+                                <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 30px;">NO.</th>
+                                <th style="border: 1px solid #000; padding: 3px; text-align: center;">ASPEK</th>
+                                <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 45px;">NILAI</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">1</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Kelakuan</td>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">B</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center;">1</td>
+                                <td style="border: 1px solid #000; padding: 3px;">Kelakuan</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">B</td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">2</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Kerajinan</td>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">B</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center;">2</td>
+                                <td style="border: 1px solid #000; padding: 3px;">Kerajinan</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">B</td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">3</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Kebersihan/Kerapihan</td>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">B</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center;">3</td>
+                                <td style="border: 1px solid #000; padding: 3px;">Kebersihan/Kerapihan</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">B</td>
                             </tr>
                         </tbody>
                     </table>
                 </td>
 
                 <!-- Table Ketidak Hadiran -->
-                <td style="width: 48%; vertical-align: top; padding: 0 0 0 1%;">
+                <td style="width: 49%; vertical-align: top; padding: 0 0 0 1%;">
                     <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
                         <thead>
                             <tr style="background-color: #d1d5db; font-weight: bold;">
-                                <th colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center;">KETIDAK HADIRAN</th>
+                                <th colspan="3" style="border: 1px solid #000; padding: 3px; text-align: center;">KETIDAK HADIRAN</th>
                             </tr>
                             <tr style="background-color: #e5e7eb; font-weight: bold;">
-                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 35px;">NO.</th>
-                                <th style="border: 1px solid #000; padding: 4px; text-align: center;">ALASAN</th>
-                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 50px;">HARI</th>
+                                <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 30px;">NO.</th>
+                                <th style="border: 1px solid #000; padding: 3px; text-align: center;">ALASAN</th>
+                                <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 45px;">HARI</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">1</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Sakit</td>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">{{ $sakit ?? 0 }}</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center;">1</td>
+                                <td style="border: 1px solid #000; padding: 3px;">Sakit</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">{{ $sakit ?? 0 }}</td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">2</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Izin</td>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">{{ $izin ?? 0 }}</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center;">2</td>
+                                <td style="border: 1px solid #000; padding: 3px;">Izin</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">{{ $izin ?? 0 }}</td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">3</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Tanpa Keterangan</td>
-                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">{{ $alpa ?? 0 }}</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center;">3</td>
+                                <td style="border: 1px solid #000; padding: 3px;">Tanpa Keterangan</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">{{ $alpa ?? 0 }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -244,13 +264,44 @@
         </table>
 
         <!-- Box Catatan Wali Kelas -->
-        <div style="border: 1px solid #000; padding: 10px; margin-bottom: 25px; font-size: 13px; min-height: 80px;">
-            <p style="font-weight: bold; font-style: italic; margin: 0 0 5px 0;">Catatan Wali Kelas :</p>
+        <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 16px; font-size: 11px; min-height: 45px;">
+            <p style="font-weight: bold; font-style: italic; margin: 0 0 2px 0;">Catatan Wali Kelas :</p>
             <p style="font-style: italic; color: #374151; margin: 0;">Tingkatkan terus semangat belajar dan kedisiplinan dalam beribadah serta mengaji.</p>
         </div>
 
         <!-- Tanda Tangan Wali Kelas & Orang Tua -->
-        <table class="no-border" style="width: 100%; border: none; font-size: 13px; text-align: center;">
+        <table class="no-border" style="width: 100%; border: none; font-size: 11px; text-align: center;">
             <tr>
-                <td style="width: 50%; padding-bottom: 60px;">Orang Tua / Wali Siswa,</td>
-                <td style="
+                <td style="width: 50%; padding-bottom: 35px;">Orang Tua / Wali Siswa,</td>
+                <td style="width: 50%; padding-bottom: 35px;">Wali Kelas,</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">( ............................................ )</td>
+                <td style="font-weight: bold;">( ............................................ )</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <!-- Script Export HTML to Word Document (.doc) -->
+    <script>
+        function exportHTMLToWord(){
+            var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+                "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+                "xmlns='http://www.w3.org/TR/REC-html40'>"+
+                "<head><meta charset='utf-8'><title>Export Word</title>"+
+                "<style>"+
+                "body { font-family: 'Times New Roman', serif; }"+
+                "table { border-collapse: collapse; }"+
+                "table.no-border, table.no-border td { border: none !important; }"+
+                "</style></head><body>";
+            var footer = "</body></html>";
+            
+            var content = document.getElementById("raport-content").cloneNode(true);
+            
+            var sourceHTML = header + content.innerHTML + footer;
+            
+            var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            var fileDownload = document.createElement("a");
+            document.body.appendChild(fileDownload);
+            fileDownload.href = source;
