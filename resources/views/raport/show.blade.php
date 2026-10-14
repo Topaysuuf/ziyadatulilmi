@@ -101,11 +101,11 @@
             
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
 
-            // Logika Otomatis Hitung Rekap Absensi Langsung di View
+            // Logika Fallback Hitung Rekap Absensi
             $siswaId = $siswa->id ?? 0;
-            $countSakit = \DB::table('absensis')->where('siswa_id', $siswaId)->where('status', 'Sakit')->count();
-            $countIzin  = \DB::table('absensis')->where('siswa_id', $siswaId)->where('status', 'Izin')->count();
-            $countAlpa  = \DB::table('absensis')->where('siswa_id', $siswaId)->whereIn('status', ['Alpa', 'Tanpa Keterangan', 'A'])->count();
+            $realSakit = isset($sakit) && $sakit > 0 ? $sakit : \DB::table('absensis')->where('siswa_id', $siswaId)->whereRaw('LOWER(status) IN (?, ?)', ['sakit', 's'])->count();
+            $realIzin  = isset($izin) && $izin > 0 ? $izin : \DB::table('absensis')->where('siswa_id', $siswaId)->whereRaw('LOWER(status) IN (?, ?)', ['izin', 'i'])->count();
+            $realAlpa  = isset($alpa) && $alpa > 0 ? $alpa : \DB::table('absensis')->where('siswa_id', $siswaId)->whereRaw('LOWER(status) IN (?, ?, ?, ?)', ['alpa', 'tanpa keterangan', 'a', 'tk'])->count();
         @endphp
 
         <!-- Tabel Nilai Sesuai Inputan Manual Guru/Admin -->
@@ -224,17 +224,17 @@
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">1</td>
                             <td class="border border-gray-900 px-3 py-1">Sakit</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $countSakit }}</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $realSakit }}</td>
                         </tr>
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">2</td>
                             <td class="border border-gray-900 px-3 py-1">Izin</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $countIzin }}</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $realIzin }}</td>
                         </tr>
                         <tr>
                             <td class="border border-gray-900 px-2 py-1 text-center">3</td>
                             <td class="border border-gray-900 px-3 py-1">Tanpa Keterangan</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $countAlpa }}</td>
+                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $realAlpa }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -247,7 +247,7 @@
             <p class="mt-2 text-gray-700 italic">Tingkatkan terus semangat belajar dan kedisiplinan dalam beribadah serta mengaji.</p>
         </div>
 
-        <!-- Tanda Tangan -->
+        <!-- Tanda Tangan Wali Kelas & Orang Tua -->
         <div class="grid grid-cols-2 gap-8 text-center text-xs md:text-sm pt-2">
             <div>
                 <p class="text-gray-700 mb-16">Orang Tua / Wali Siswa,</p>
