@@ -101,23 +101,22 @@
             
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
 
-            // Logika Fleksibel Hitung Rekap Absensi Langsung dari Tabel Absensis Database
+            // Logika Deteksi Multi-Skenario Absensi dari Database
             $siswaId = $siswa->id ?? 0;
-            
-            $realSakit = \DB::table('absensis')
-                ->where('siswa_id', $siswaId)
-                ->whereRaw('LOWER(status) IN (?, ?)', ['sakit', 's'])
-                ->count();
+            $nisn = $siswa->nisn ?? $siswa->nis ?? '';
+            $namaSiswa = $siswa->nama ?? '';
 
-            $realIzin = \DB::table('absensis')
-                ->where('siswa_id', $siswaId)
-                ->whereRaw('LOWER(status) IN (?, ?)', ['izin', 'i'])
-                ->count();
+            // Query dasar yang fleksibel mencari via siswa_id, nisn, atau nama_siswa
+            $absensiQuery = \DB::table('absensis')->where(function($q) use ($siswaId, $nisn, $namaSiswa) {
+                $q->where('siswa_id', $siswaId);
+                if (!empty($nisn)) { $q->orWhere('nisn', $nisn); }
+                if (!empty($namaSiswa)) { $q->orWhere('nama', 'LIKE', '%'.$namaSiswa.'%')->orWhere('nama_siswa', 'LIKE', '%'.$namaSiswa.'%'); }
+            });
 
-            $realAlpa = \DB::table('absensis')
-                ->where('siswa_id', $siswaId)
-                ->whereRaw('LOWER(status) IN (?, ?, ?, ?)', ['alpa', 'tanpa keterangan', 'a', 'tk'])
-                ->count();
+            // Hitung Sakit, Izin, dan Alpa/Tanpa Keterangan
+            $realSakit = (clone $absensiQuery)->whereRaw('LOWER(status) IN (?, ?, ?)', ['sakit', 's', 'sick'])->count();
+            $realIzin  = (clone $absensiQuery)->whereRaw('LOWER(status) IN (?, ?, ?)', ['izin', 'i', 'ijin'])->count();
+            $realAlpa  = (clone $absensiQuery)->whereRaw('LOWER(status) IN (?, ?, ?, ?, ?)', ['alpa', 'tanpa keterangan', 'a', 'tk', 'alpha'])->count();
         @endphp
 
         <!-- Tabel Nilai Sesuai Inputan Manual Guru/Admin -->
