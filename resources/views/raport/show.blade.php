@@ -57,16 +57,16 @@
         </div>
     </div>
 
-    <!-- Container Lembar Raport (Layout Dipadatkan untuk 1 Lembar) -->
+    <!-- Container Lembar Raport -->
     <div id="raport-content" class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 print-card page-break-inside-avoid">
         
         <!-- Gambar Kop Surat -->
         <div class="mb-3">
             @php
                 $kelas = strtoupper($siswa->kelas ?? '');
-                $isSmp = str_contains($kelas, 'SMP') \vert{}\vert{} str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') \vert{}\vert{} str_contains($kelas, 'IX');
-                $gambarKop =$isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
-                $fase =$isSmp ? 'D' : 'F';
+                $isSmp = str_contains($kelas, 'SMP') || str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') || str_contains($kelas, 'IX');
+                $gambarKop = $isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
+                $fase = $isSmp ? 'D' : 'F';
             @endphp
             <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%;">
         </div>
@@ -123,11 +123,11 @@
             $kkmDefault = 75;
 
             foreach($nilais ?? [] as $n) {
-                $totalNilai +=$n->nilai;
+                $totalNilai += $n->nilai;
                 $countNilai++;
             }
             
-            $rataRata =$countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
+            $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
         @endphp
 
         <!-- Tabel Nilai Utama -->
@@ -146,13 +146,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($nilais ?? [] as $index =>$nilai)
+                    @forelse($nilais ?? [] as $index => $nilai)
                         @php
-                            $score =$nilai->nilai;
-                            $mapel =$nilai->mata_pelajaran;
+                            $score = $nilai->nilai;
+                            $mapel = $nilai->mata_pelajaran;
                             
-                            if ($score >= 85) {$capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
-                            } elseif ($score >= $kkmDefault) {$capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $mapel.";
+                            if ($score >= 85) {
+                                $capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
+                            } elseif ($score >= $kkmDefault) {
+                                $capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $mapel.";
                             } else {
                                 $capaian = "Perlu bimbingan dan pendampingan khusus dalam memahami materi $mapel.";
                             }
@@ -180,12 +182,12 @@
                     <!-- Summary / Total & Rata-rata -->
                     <tr style="font-weight: bold; background-color: #f9fafb;">
                         <td colspan="3" style="border: 1px solid #000; padding: 4px; text-align: right;">Jumlah Nilai :</td>
-                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $totalNilai > 0 ?$totalNilai : '-' }}</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $totalNilai > 0 ? $totalNilai : '-' }}</td>
                         <td style="border: 1px solid #000; padding: 4px;"></td>
                     </tr>
                     <tr style="font-weight: bold; background-color: #f9fafb;">
                         <td colspan="3" style="border: 1px solid #000; padding: 4px; text-align: right;">Nilai Rata-rata Mata Pelajaran :</td>
-                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $rataRata > 0 ?$rataRata : '-' }}</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $rataRata > 0 ? $rataRata : '-' }}</td>
                         <td style="border: 1px solid #000; padding: 4px;"></td>
                     </tr>
                 </tbody>
@@ -283,7 +285,7 @@
 
     </div>
 
-    <!-- Script Export HTML to Word Document (.doc) -->
+    <!-- Script Export HTML to Word Document (.doc) tanpa Str::slug untuk menghindari Error 500 -->
     <script>
         function exportHTMLToWord(){
             var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
@@ -298,10 +300,19 @@
             var footer = "</body></html>";
             
             var content = document.getElementById("raport-content").cloneNode(true);
-            
             var sourceHTML = header + content.innerHTML + footer;
+            
+            var namaSiswa = "{{ $siswa->nama ?? 'Siswa' }}".toLowerCase().replace(/[^a-z0-9]/g, '-');
             
             var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
             var fileDownload = document.createElement("a");
             document.body.appendChild(fileDownload);
             fileDownload.href = source;
+            fileDownload.download = 'Raport_' + namaSiswa + '.doc';
+            fileDownload.click();
+            document.body.removeChild(fileDownload);
+        }
+    </script>
+
+</body>
+</html>
