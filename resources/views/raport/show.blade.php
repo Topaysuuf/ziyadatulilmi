@@ -15,7 +15,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 py-8">
 
-    <!-- Tombol Aksi (Kembali & Cetak) -->
+    <!-- Tombol Aksi (Kembali, Cetak PDF, & Download Word) -->
     <div class="max-w-5xl mx-auto px-4 mb-6 flex justify-between items-center no-print">
         <div>
             <h1 class="text-xl font-bold text-gray-800">E-Raport Digital</h1>
@@ -26,13 +26,16 @@
                 ← Kembali
             </a>
             <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-2 shadow-sm">
-                🖨️ Cetak Raport / Simpan PDF
+                🖨️ Cetak PDF
+            </button>
+            <button onclick="exportHTMLToWord()" class="bg-blue-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-900 transition flex items-center gap-2 shadow-sm">
+                📄 Download Word (.doc)
             </button>
         </div>
     </div>
 
     <!-- Container Lembar Raport -->
-    <div class="max-w-5xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200 print-card">
+    <div id="raport-content" class="max-w-5xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-200 print-card">
         
         <!-- Gambar Kop Surat Otomatis Sinkron SMP / SMA -->
         <div class="mb-6">
@@ -102,7 +105,7 @@
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
         @endphp
 
-        <!-- Tabel Nilai Sesuai Inputan Manual Guru/Admin -->
+        <!-- Tabel Nilai -->
         <div class="overflow-x-auto mb-6">
             <table class="w-full border-collapse border border-gray-900 text-xs md:text-sm">
                 <thead>
@@ -166,7 +169,7 @@
             </table>
         </div>
 
-        <!-- Tabel Kepribadian & Ketidak Hadiran Side by Side -->
+        <!-- Tabel Kepribadian & Ketidak Hadiran -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-xs md:text-sm">
             <!-- Table Kepribadian -->
             <div>
@@ -201,7 +204,7 @@
                 </table>
             </div>
 
-            <!-- Table Ketidak Hadiran (Diambil dari Controller) -->
+            <!-- Table Ketidak Hadiran -->
             <div>
                 <table class="w-full border-collapse border border-gray-900">
                     <thead>
@@ -254,6 +257,26 @@
         </div>
 
     </div>
+
+    <!-- Script Export HTML to Word Document (.doc) -->
+    <script>
+        function exportHTMLToWord(){
+            var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+                "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+                "xmlns='http://www.w3.org/TR/REC-html40'>"+
+                "<head><meta charset='utf-8'><title>Export Word</title><style>table{border-collapse:collapse;width:100%;} td,th{border:1px solid #000;padding:5px;}</style></head><body>";
+            var footer = "</body></html>";
+            var sourceHTML = header + document.getElementById("raport-content").innerHTML + footer;
+            
+            var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            var fileDownload = document.createElement("a");
+            document.body.appendChild(fileDownload);
+            fileDownload.href = source;
+            fileDownload.download = 'Raport_{{ Str::slug($siswa->nama ?? "Siswa") }}.doc';
+            fileDownload.click();
+            document.body.removeChild(fileDownload);
+        }
+    </script>
 
 </body>
 </html>
