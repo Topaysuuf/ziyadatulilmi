@@ -11,6 +11,9 @@
             body { background: white !important; }
             .print-card { box-shadow: none !important; border: none !important; padding: 0 !important; }
         }
+        table.no-border, table.no-border td {
+            border: none !important;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 py-8">
@@ -41,56 +44,58 @@
         <div class="mb-6">
             @php
                 $kelas = strtoupper($siswa->kelas ?? '');
-                $isSmp = str_contains($kelas, 'SMP') || str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') || str_contains($kelas, 'IX');
-                $gambarKop = $isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
-                $fase = $isSmp ? 'D' : 'F';
+                $isSmp = str_contains($kelas, 'SMP') \vert{}\vert{} str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') \vert{}\vert{} str_contains($kelas, 'IX');
+                $gambarKop =$isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
+                $fase =$isSmp ? 'D' : 'F';
             @endphp
-            <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" class="w-full h-auto object-contain">
+            <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%;">
         </div>
 
-        <!-- Identitas Siswa -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs md:text-sm mb-6 border-b pb-4">
-            <div>
-                <table class="w-full text-left">
-                    <tr class="align-top">
-                        <td class="w-28 font-semibold text-gray-700 py-1">Nama</td>
-                        <td class="py-1">: <span class="font-bold text-gray-900 uppercase">{{ $siswa->nama ?? '-' }}</span></td>
-                    </tr>
-                    <tr class="align-top">
-                        <td class="font-semibold text-gray-700 py-1">NISN / NIS</td>
-                        <td class="py-1">: {{ $siswa->nisn ?? $siswa->nis ?? '-' }}</td>
-                    </tr>
-                    <tr class="align-top">
-                        <td class="font-semibold text-gray-700 py-1">Nama Sekolah</td>
-                        <td class="py-1">: <span class="font-semibold">{{ $isSmp ? 'SMP ZIYADATUL ILMI KOTA SERANG' : 'SMA ZIYADATUL ILMI KOTA SERANG' }}</span></td>
-                    </tr>
-                    <tr class="align-top">
-                        <td class="font-semibold text-gray-700 py-1">Alamat</td>
-                        <td class="py-1">: Jl. Nancang Wetan, Karundang, Cipocok Jaya</td>
-                    </tr>
-                </table>
-            </div>
-            <div>
-                <table class="w-full text-left">
-                    <tr class="align-top">
-                        <td class="w-28 font-semibold text-gray-700 py-1">Kelas</td>
-                        <td class="py-1">: <span class="font-bold">{{ $siswa->kelas ?? '-' }}</span></td>
-                    </tr>
-                    <tr class="align-top">
-                        <td class="font-semibold text-gray-700 py-1">Fase</td>
-                        <td class="py-1">: {{ $fase }}</td>
-                    </tr>
-                    <tr class="align-top">
-                        <td class="font-semibold text-gray-700 py-1">Semester</td>
-                        <td class="py-1">: 1 (Satu) / Ganjil</td>
-                    </tr>
-                    <tr class="align-top">
-                        <td class="font-semibold text-gray-700 py-1">Tahun Pelajaran</td>
-                        <td class="py-1">: 2026/2027</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <!-- Identitas Siswa (Murni Menggunakan Tabel HTML Tanpa Border untuk Kompatibilitas Word) -->
+        <table class="no-border" style="width: 100%; border: none; margin-bottom: 20px; font-size: 13px;">
+            <tr>
+                <td style="width: 50%; vertical-align: top; padding: 0 10px 0 0;">
+                    <table class="no-border" style="width: 100%; border: none;">
+                        <tr>
+                            <td style="width: 110px; font-weight: bold; color: #374151; padding: 3px 0;">Nama</td>
+                            <td style="padding: 3px 0;">: <span style="font-weight: bold; color: #111827; text-transform: uppercase;">{{ $siswa->nama ?? '-' }}</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">NISN / NIS</td>
+                            <td style="padding: 3px 0;">: {{ $siswa->nisn ?? $siswa->nis ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Nama Sekolah</td>
+                            <td style="padding: 3px 0;">: {{ $isSmp ? 'SMP ZIYADATUL ILMI KOTA SERANG' : 'SMA ZIYADATUL ILMI KOTA SERANG' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Alamat</td>
+                            <td style="padding: 3px 0;">: Jl. Nancang Wetan, Karundang, Cipocok Jaya</td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width: 50%; vertical-align: top; padding: 0 0 0 10px;">
+                    <table class="no-border" style="width: 100%; border: none;">
+                        <tr>
+                            <td style="width: 110px; font-weight: bold; color: #374151; padding: 3px 0;">Kelas</td>
+                            <td style="padding: 3px 0;">: <span style="font-weight: bold;">{{ $siswa->kelas ?? '-' }}</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Fase</td>
+                            <td style="padding: 3px 0;">: {{ $fase }}</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Semester</td>
+                            <td style="padding: 3px 0;">: 1 (Satu) / Ganjil</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; color: #374151; padding: 3px 0;">Tahun Pelajaran</td>
+                            <td style="padding: 3px 0;">: 2026/2027</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
         @php
             $totalNilai = 0;
@@ -98,185 +103,154 @@
             $kkmDefault = 75;
 
             foreach($nilais ?? [] as $n) {
-                $totalNilai += $n->nilai;
+                $totalNilai +=$n->nilai;
                 $countNilai++;
             }
             
-            $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
+            $rataRata =$countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
         @endphp
 
-        <!-- Tabel Nilai -->
+        <!-- Tabel Nilai Utama Sesuai Format -->
         <div class="overflow-x-auto mb-6">
-            <table class="w-full border-collapse border border-gray-900 text-xs md:text-sm">
+            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 13px;">
                 <thead>
-                    <tr class="bg-gray-300 text-gray-900 font-bold">
-                        <th rowspan="2" class="border border-gray-900 px-2 py-2 text-center w-12 align-middle">NO.</th>
-                        <th rowspan="2" class="border border-gray-900 px-3 py-2 text-center align-middle">Nama Pelajaran</th>
-                        <th colspan="3" class="border border-gray-900 px-3 py-1 text-center">Nilai Murni ASTS</th>
+                    <tr style="background-color: #d1d5db; color: #000; font-weight: bold;">
+                        <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: center; width: 40px; vertical-align: middle;">NO.</th>
+                        <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: center; vertical-align: middle;">Nama Pelajaran</th>
+                        <th colspan="3" style="border: 1px solid #000; padding: 4px; text-align: center;">Nilai Murni ASTS</th>
                     </tr>
-                    <tr class="bg-gray-300 text-gray-900 font-bold">
-                        <th class="border border-gray-900 px-2 py-1 text-center w-16">KKM</th>
-                        <th class="border border-gray-900 px-2 py-1 text-center w-20">NILAI</th>
-                        <th class="border border-gray-900 px-3 py-1 text-center w-1/2">CAPAIAN KOMPETENSI</th>
+                    <tr style="background-color: #d1d5db; color: #000; font-weight: bold;">
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 60px;">KKM</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 70px;">NILAI</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 50%;">CAPAIAN KOMPETENSI</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($nilais ?? [] as $index => $nilai)
+                    @forelse($nilais ?? [] as $index =>$nilai)
                         @php
-                            $score = $nilai->nilai;
-                            $mapel = $nilai->mata_pelajaran;
+                            $score =$nilai->nilai;
+                            $mapel =$nilai->mata_pelajaran;
                             
-                            if ($score >= 85) {
-                                $capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
-                            } elseif ($score >= $kkmDefault) {
-                                $capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $mapel.";
+                            if ($score >= 85) {$capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
+                            } elseif ($score >= $kkmDefault) {$capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $mapel.";
                             } else {
                                 $capaian = "Perlu bimbingan dan pendampingan khusus dalam memahami materi $mapel.";
                             }
                         @endphp
                         <tr>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center font-medium">{{ $index + 1 }}</td>
-                            <td class="border border-gray-900 px-3 py-1.5 font-semibold text-gray-900">
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">{{ $index + 1 }}</td>
+                            <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">
                                 {{ $mapel }}
                                 @if(!empty($nilai->jenis_ujian))
-                                    <span class="text-xs text-gray-500 font-normal">({{ $nilai->jenis_ujian }})</span>
+                                    <span style="font-size: 11px; font-weight: normal; color: #4b5563;">({{ $nilai->jenis_ujian }})</span>
                                 @endif
                             </td>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center font-semibold text-gray-700">{{ $kkmDefault }}</td>
-                            <td class="border border-gray-900 px-2 py-1.5 text-center font-bold text-gray-900">{{ $score }}</td>
-                            <td class="border border-gray-900 px-3 py-1.5 text-xs text-gray-800">{{ $capaian }}</td>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center;">{{ $kkmDefault }}</td>
+                            <td style="border: 1px solid #000; padding: 6px; text-align: center; font-weight: bold;">{{ $score }}</td>
+                            <td style="border: 1px solid #000; padding: 6px; font-size: 12px;">{{ $capaian }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="border border-gray-900 px-4 py-6 text-center text-gray-400 italic">
+                            <td colspan="5" style="border: 1px solid #000; padding: 12px; text-align: center; color: #9ca3af; font-style: italic;">
                                 Belum ada data nilai yang diinput oleh guru/admin.
                             </td>
                         </tr>
                     @endforelse
 
                     <!-- Summary / Total & Rata-rata -->
-                    <tr class="font-bold bg-gray-50">
-                        <td colspan="3" class="border border-gray-900 px-3 py-1.5 text-right">Jumlah Nilai :</td>
-                        <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $totalNilai > 0 ? $totalNilai : '-' }}</td>
-                        <td class="border border-gray-900 px-3 py-1.5"></td>
+                    <tr style="font-weight: bold; background-color: #f9fafb;">
+                        <td colspan="3" style="border: 1px solid #000; padding: 6px; text-align: right;">Jumlah Nilai :</td>
+                        <td style="border: 1px solid #000; padding: 6px; text-align: center;">{{ $totalNilai > 0 ?$totalNilai : '-' }}</td>
+                        <td style="border: 1px solid #000; padding: 6px;"></td>
                     </tr>
-                    <tr class="font-bold bg-gray-50">
-                        <td colspan="3" class="border border-gray-900 px-3 py-1.5 text-right">Nilai Rata-rata Mata Pelajaran :</td>
-                        <td class="border border-gray-900 px-2 py-1.5 text-center font-bold">{{ $rataRata > 0 ? $rataRata : '-' }}</td>
-                        <td class="border border-gray-900 px-3 py-1.5"></td>
+                    <tr style="font-weight: bold; background-color: #f9fafb;">
+                        <td colspan="3" style="border: 1px solid #000; padding: 6px; text-align: right;">Nilai Rata-rata Mata Pelajaran :</td>
+                        <td style="border: 1px solid #000; padding: 6px; text-align: center;">{{ $rataRata > 0 ?$rataRata : '-' }}</td>
+                        <td style="border: 1px solid #000; padding: 6px;"></td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
         <!-- Tabel Kepribadian & Ketidak Hadiran -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 text-xs md:text-sm">
-            <!-- Table Kepribadian -->
-            <div>
-                <table class="w-full border-collapse border border-gray-900">
-                    <thead>
-                        <tr class="bg-gray-300 font-bold">
-                            <th colspan="3" class="border border-gray-900 px-2 py-1 text-center">KEPRIBADIAN</th>
-                        </tr>
-                        <tr class="bg-gray-200 font-bold">
-                            <th class="border border-gray-900 px-2 py-1 text-center w-10">NO.</th>
-                            <th class="border border-gray-900 px-3 py-1 text-center">ASPEK</th>
-                            <th class="border border-gray-900 px-2 py-1 text-center w-16">NILAI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="border border-gray-900 px-2 py-1 text-center">1</td>
-                            <td class="border border-gray-900 px-3 py-1">Kelakuan</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">B</td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 px-2 py-1 text-center">2</td>
-                            <td class="border border-gray-900 px-3 py-1">Kerajinan</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">B</td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 px-2 py-1 text-center">3</td>
-                            <td class="border border-gray-900 px-3 py-1">Kebersihan/Kerapihan</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">B</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <table class="no-border" style="width: 100%; border: none; margin-bottom: 20px; font-size: 13px;">
+            <tr>
+                <!-- Table Kepribadian -->
+                <td style="width: 48%; vertical-align: top; padding: 0 1% 0 0;">
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                        <thead>
+                            <tr style="background-color: #d1d5db; font-weight: bold;">
+                                <th colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center;">KEPRIBADIAN</th>
+                            </tr>
+                            <tr style="background-color: #e5e7eb; font-weight: bold;">
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 35px;">NO.</th>
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center;">ASPEK</th>
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 50px;">NILAI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">1</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Kelakuan</td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">B</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">2</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Kerajinan</td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">B</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">3</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Kebersihan/Kerapihan</td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">B</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
 
-            <!-- Table Ketidak Hadiran -->
-            <div>
-                <table class="w-full border-collapse border border-gray-900">
-                    <thead>
-                        <tr class="bg-gray-300 font-bold">
-                            <th colspan="3" class="border border-gray-900 px-2 py-1 text-center">KETIDAK HADIRAN</th>
-                        </tr>
-                        <tr class="bg-gray-200 font-bold">
-                            <th class="border border-gray-900 px-2 py-1 text-center w-10">NO.</th>
-                            <th class="border border-gray-900 px-3 py-1 text-center">ALASAN</th>
-                            <th class="border border-gray-900 px-2 py-1 text-center w-16">HARI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="border border-gray-900 px-2 py-1 text-center">1</td>
-                            <td class="border border-gray-900 px-3 py-1">Sakit</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $sakit ?? 0 }}</td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 px-2 py-1 text-center">2</td>
-                            <td class="border border-gray-900 px-3 py-1">Izin</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $izin ?? 0 }}</td>
-                        </tr>
-                        <tr>
-                            <td class="border border-gray-900 px-2 py-1 text-center">3</td>
-                            <td class="border border-gray-900 px-3 py-1">Tanpa Keterangan</td>
-                            <td class="border border-gray-900 px-2 py-1 text-center font-semibold">{{ $alpa ?? 0 }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                <!-- Table Ketidak Hadiran -->
+                <td style="width: 48%; vertical-align: top; padding: 0 0 0 1%;">
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+                        <thead>
+                            <tr style="background-color: #d1d5db; font-weight: bold;">
+                                <th colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center;">KETIDAK HADIRAN</th>
+                            </tr>
+                            <tr style="background-color: #e5e7eb; font-weight: bold;">
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 35px;">NO.</th>
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center;">ALASAN</th>
+                                <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 50px;">HARI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">1</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Sakit</td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">{{ $sakit ?? 0 }}</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">2</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Izin</td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">{{ $izin ?? 0 }}</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center;">3</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Tanpa Keterangan</td>
+                                <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">{{ $alpa ?? 0 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
         <!-- Box Catatan Wali Kelas -->
-        <div class="border border-gray-900 p-3 rounded-none mb-8 text-xs md:text-sm min-h-[90px]">
-            <p class="font-bold italic text-gray-900">Catatan Wali Kelas :</p>
-            <p class="mt-2 text-gray-700 italic">Tingkatkan terus semangat belajar dan kedisiplinan dalam beribadah serta mengaji.</p>
+        <div style="border: 1px solid #000; padding: 10px; margin-bottom: 25px; font-size: 13px; min-height: 80px;">
+            <p style="font-weight: bold; font-style: italic; margin: 0 0 5px 0;">Catatan Wali Kelas :</p>
+            <p style="font-style: italic; color: #374151; margin: 0;">Tingkatkan terus semangat belajar dan kedisiplinan dalam beribadah serta mengaji.</p>
         </div>
 
         <!-- Tanda Tangan Wali Kelas & Orang Tua -->
-        <div class="grid grid-cols-2 gap-8 text-center text-xs md:text-sm pt-2">
-            <div>
-                <p class="text-gray-700 mb-16">Orang Tua / Wali Siswa,</p>
-                <p class="font-bold text-gray-900">( ............................................ )</p>
-            </div>
-            <div>
-                <p class="text-gray-700 mb-16">Wali Kelas,</p>
-                <p class="font-bold text-gray-900">( ............................................ )</p>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Script Export HTML to Word Document (.doc) -->
-    <script>
-        function exportHTMLToWord(){
-            var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
-                "xmlns:w='urn:schemas-microsoft-com:office:word' "+
-                "xmlns='http://www.w3.org/TR/REC-html40'>"+
-                "<head><meta charset='utf-8'><title>Export Word</title><style>table{border-collapse:collapse;width:100%;} td,th{border:1px solid #000;padding:5px;}</style></head><body>";
-            var footer = "</body></html>";
-            var sourceHTML = header + document.getElementById("raport-content").innerHTML + footer;
-            
-            var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
-            var fileDownload = document.createElement("a");
-            document.body.appendChild(fileDownload);
-            fileDownload.href = source;
-            fileDownload.download = 'Raport_{{ Str::slug($siswa->nama ?? "Siswa") }}.doc';
-            fileDownload.click();
-            document.body.removeChild(fileDownload);
-        }
-    </script>
-
-</body>
-</html>
+        <table class="no-border" style="width: 100%; border: none; font-size: 13px; text-align: center;">
+            <tr>
+                <td style="width: 50%; padding-bottom: 60px;">Orang Tua / Wali Siswa,</td>
+                <td style="
