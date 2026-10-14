@@ -101,11 +101,23 @@
             
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
 
-            // Logika Fallback Hitung Rekap Absensi
+            // Logika Fleksibel Hitung Rekap Absensi Langsung dari Tabel Absensis Database
             $siswaId = $siswa->id ?? 0;
-            $realSakit = isset($sakit) && $sakit > 0 ? $sakit : \DB::table('absensis')->where('siswa_id', $siswaId)->whereRaw('LOWER(status) IN (?, ?)', ['sakit', 's'])->count();
-            $realIzin  = isset($izin) && $izin > 0 ? $izin : \DB::table('absensis')->where('siswa_id', $siswaId)->whereRaw('LOWER(status) IN (?, ?)', ['izin', 'i'])->count();
-            $realAlpa  = isset($alpa) && $alpa > 0 ? $alpa : \DB::table('absensis')->where('siswa_id', $siswaId)->whereRaw('LOWER(status) IN (?, ?, ?, ?)', ['alpa', 'tanpa keterangan', 'a', 'tk'])->count();
+            
+            $realSakit = \DB::table('absensis')
+                ->where('siswa_id', $siswaId)
+                ->whereRaw('LOWER(status) IN (?, ?)', ['sakit', 's'])
+                ->count();
+
+            $realIzin = \DB::table('absensis')
+                ->where('siswa_id', $siswaId)
+                ->whereRaw('LOWER(status) IN (?, ?)', ['izin', 'i'])
+                ->count();
+
+            $realAlpa = \DB::table('absensis')
+                ->where('siswa_id', $siswaId)
+                ->whereRaw('LOWER(status) IN (?, ?, ?, ?)', ['alpa', 'tanpa keterangan', 'a', 'tk'])
+                ->count();
         @endphp
 
         <!-- Tabel Nilai Sesuai Inputan Manual Guru/Admin -->
