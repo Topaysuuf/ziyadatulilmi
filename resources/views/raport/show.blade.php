@@ -62,21 +62,24 @@
         
         @php
             $kelas = strtoupper($siswa->kelas ?? '');
-            $isSmp = str_contains($kelas, 'SMP') \vert{}\vert{} str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') \vert{}\vert{} str_contains($kelas, 'IX');
-            $fase =$isSmp ? 'D' : 'F';
-            $gambarKopLama =$isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
+            $isSmp = str_contains($kelas, 'SMP') || str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') || str_contains($kelas, 'IX');
+            $fase = $isSmp ? 'D' : 'F';
+            
+            // Auto-Sync Kop Utama dan Logo Kanan berdasarkan Jenjang (SMP / SMA)
+            $gambarKopLama = $isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
+            $logoJenjangKanan = $isSmp ? 'smppp.jpg' : 'SMA.jpg';
         @endphp
 
-        <!-- Kop Surat Asli/Lama + Logo Tambahan di Kanan -->
+        <!-- Kop Surat Asli/Lama + Logo Jenjang Kanan (Otomatis Sync SMP/SMA) -->
         <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px;">
             <tr>
-                <!-- Gambar Kop Surat Lama -->
+                <!-- Gambar Kop Surat Utama -->
                 <td style="width: 85%; vertical-align: middle; padding-right: 10px;">
                     <img src="{{ asset('images/' . $gambarKopLama) }}" alt="Kop Surat Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%; display: block;">
                 </td>
-                <!-- Logo Tambahan Kanan (Kota Serang / OIP.jpg) -->
+                <!-- Logo Tambahan Kanan (smppp.jpg / SMA.jpg Otomatis) -->
                 <td style="width: 15%; text-align: right; vertical-align: middle;">
-                    <img src="{{ asset('images/OIP.jpg') }}" alt="Logo Kota Serang" style="max-height: 85px; width: auto; display: inline-block;">
+                    <img src="{{ asset('images/' . $logoJenjangKanan) }}" alt="Logo Jenjang" style="max-height: 85px; width: auto; display: inline-block;">
                 </td>
             </tr>
         </table>
@@ -133,11 +136,11 @@
             $kkmDefault = 75;
 
             foreach($nilais ?? [] as $n) {
-                $totalNilai +=$n->nilai;
+                $totalNilai += $n->nilai;
                 $countNilai++;
             }
             
-            $rataRata =$countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
+            $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
         @endphp
 
         <!-- Tabel Nilai Utama -->
@@ -156,13 +159,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($nilais ?? [] as $index =>$nilai)
+                    @forelse($nilais ?? [] as $index => $nilai)
                         @php
-                            $score =$nilai->nilai;
-                            $mapel =$nilai->mata_pelajaran;
+                            $score = $nilai->nilai;
+                            $mapel = $nilai->mata_pelajaran;
                             
-                            if ($score >= 85) {$capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
-                            } elseif ($score >= $kkmDefault) {$capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $mapel.";
+                            if ($score >= 85) {
+                                $capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
+                            } elseif ($score >= $kkmDefault) {
+                                $capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $mapel.";
                             } else {
                                 $capaian = "Perlu bimbingan dan pendampingan khusus dalam memahami materi $mapel.";
                             }
@@ -190,12 +195,12 @@
                     <!-- Summary / Total & Rata-rata -->
                     <tr style="font-weight: bold; background-color: #f9fafb;">
                         <td colspan="3" style="border: 1px solid #000; padding: 4px; text-align: right;">Jumlah Nilai :</td>
-                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $totalNilai > 0 ?$totalNilai : '-' }}</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $totalNilai > 0 ? $totalNilai : '-' }}</td>
                         <td style="border: 1px solid #000; padding: 4px;"></td>
                     </tr>
                     <tr style="font-weight: bold; background-color: #f9fafb;">
                         <td colspan="3" style="border: 1px solid #000; padding: 4px; text-align: right;">Nilai Rata-rata Mata Pelajaran :</td>
-                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $rataRata > 0 ?$rataRata : '-' }}</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $rataRata > 0 ? $rataRata : '-' }}</td>
                         <td style="border: 1px solid #000; padding: 4px;"></td>
                     </tr>
                 </tbody>
@@ -286,3 +291,41 @@
                 <td style="width: 50%; padding-bottom: 30px;">Wali Kelas,</td>
             </tr>
             <tr>
+                <td style="font-weight: bold;">( ............................................ )</td>
+                <td style="font-weight: bold;">( ............................................ )</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <!-- Script Export HTML to Word Document -->
+    <script>
+        function exportHTMLToWord(){
+            var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
+                "xmlns:w='urn:schemas-microsoft-com:office:word' "+
+                "xmlns='http://www.w3.org/TR/REC-html40'>"+
+                "<head><meta charset='utf-8'><title>Export Word</title>"+
+                "<style>"+
+                "body { font-family: 'Times New Roman', serif; }"+
+                "table { border-collapse: collapse; }"+
+                "table.no-border, table.no-border td { border: none !important; }"+
+                "</style></head><body>";
+            var footer = "</body></html>";
+            
+            var content = document.getElementById("raport-content").cloneNode(true);
+            var sourceHTML = header + content.innerHTML + footer;
+            
+            var namaSiswa = "{{ $siswa->nama ?? 'Siswa' }}".toLowerCase().replace(/[^a-z0-9]/g, '-');
+            
+            var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+            var fileDownload = document.createElement("a");
+            document.body.appendChild(fileDownload);
+            fileDownload.href = source;
+            fileDownload.download = 'Raport_' + namaSiswa + '.doc';
+            fileDownload.click();
+            document.body.removeChild(fileDownload);
+        }
+    </script>
+
+</body>
+</html>
