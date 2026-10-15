@@ -70,16 +70,31 @@
             $logoJenjangKanan = $isSmp ? 'smppp.jpg' : 'SMA.jpg';
         @endphp
 
-        <!-- Kop Surat Asli/Lama + Logo Jenjang Kanan (Otomatis Sync SMP/SMA) -->
-        <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px;">
+        <!-- Kop Surat Tiga Kolom Sejajar Presisi Vertikal -->
+        <table class="no-border" style="width: 100%; border: none; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 12px;">
             <tr>
-                <!-- Gambar Kop Surat Utama -->
-                <td style="width: 85%; vertical-align: middle; padding-right: 10px;">
-                    <img src="{{ asset('images/' . $gambarKopLama) }}" alt="Kop Surat Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%; display: block;">
+                <!-- Logo Kiri: Sekolah / Yayasan -->
+                <td style="width: 15%; text-align: center; vertical-align: middle;">
+                    <img src="{{ asset('images/' . $gambarKopLama) }}" alt="Logo Sekolah" style="max-height: 80px; width: auto; display: inline-block; vertical-align: middle;">
                 </td>
-                <!-- Logo Tambahan Kanan (smppp.jpg / SMA.jpg Otomatis) -->
-                <td style="width: 15%; text-align: right; vertical-align: middle;">
-                    <img src="{{ asset('images/' . $logoJenjangKanan) }}" alt="Logo Jenjang" style="max-height: 85px; width: auto; display: inline-block;">
+                
+                <!-- Teks Tengah: Nama & Alamat Sekolah -->
+                <td style="width: 70%; text-align: center; vertical-align: middle; padding: 0 5px;">
+                    <h2 style="font-size: 15px; font-weight: bold; margin: 0; padding: 0; text-transform: uppercase; color: #000;">
+                        {{ $isSmp ? 'SEKOLAH MENENGAH PERTAMA (SMP)' : 'SEKOLAH MENENGAH ATAS (SMA)' }}
+                    </h2>
+                    <h1 style="font-size: 20px; font-weight: 900; margin: 2px 0; padding: 0; color: #000; letter-spacing: 1px;">
+                        ZIYADATUL ILMI
+                    </h1>
+                    <p style="font-size: 10px; margin: 2px 0 0 0; color: #000; line-height: 1.2;">
+                        Lingkungan Nancang Wetan RT. 004/004 Kel. Karundang Kec. Cipocok Jaya<br>
+                        Kota Serang – Banten HP : <strong>{{ $isSmp ? '0853 1206 5692' : '0878 7668 8979' }}</strong>
+                    </p>
+                </td>
+
+                <!-- Logo Kanan: Logo Jenjang Banten / SMA (Sejajar Sempurna) -->
+                <td style="width: 15%; text-align: center; vertical-align: middle;">
+                    <img src="{{ asset('images/' . $logoJenjangKanan) }}" alt="Logo Jenjang" style="max-height: 80px; width: auto; display: inline-block; vertical-align: middle;">
                 </td>
             </tr>
         </table>
