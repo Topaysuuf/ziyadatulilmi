@@ -38,7 +38,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 py-6">
 
-    <!-- Tombol Aksi (Kembali, Cetak PDF, & Download Word) -->
+    <!-- Tombol Aksi -->
     <div class="max-w-4xl mx-auto px-4 mb-4 flex justify-between items-center no-print">
         <div>
             <h1 class="text-xl font-bold text-gray-800">E-Raport Digital</h1>
@@ -60,19 +60,45 @@
     <!-- Container Lembar Raport -->
     <div id="raport-content" class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 print-card page-break-inside-avoid">
         
-        <!-- Gambar Kop Surat -->
-        <div class="mb-3">
-            @php
-                $kelas = strtoupper($siswa->kelas ?? '');
-                $isSmp = str_contains($kelas, 'SMP') || str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') || str_contains($kelas, 'IX');
-                $gambarKop = $isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
-                $fase = $isSmp ? 'D' : 'F';
-            @endphp
-            <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%;">
-        </div>
+        @php
+            $kelas = strtoupper($siswa->kelas ?? '');
+            $isSmp = str_contains($kelas, 'SMP') || str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') || str_contains($kelas, 'IX');
+            $fase = $isSmp ? 'D' : 'F';
+            $namaSekolah = $isSmp ? 'SEKOLAH MENENGAH PERTAMA (SMP)' : 'SEKOLAH MENENGAH ATAS (SMA)';
+            $telepon = $isSmp ? '0853 1206 5692' : '0878 7668 8979';
+        @endphp
+
+        <!-- Kop Surat Dua Logo (Kiri: Yayasan/Sekolah, Kanan: Logo Kota Serang OIP.jpg) -->
+        <table class="no-border" style="width: 100%; border: none; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 12px;">
+            <tr>
+                <!-- Logo Kiri: Sekolah / Yayasan -->
+                <td style="width: 15%; text-align: left; vertical-align: middle;">
+                    <img src="{{ asset('images/' . ($isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png')) }}" alt="Logo Sekolah" style="max-height: 80px; width: auto; display: inline-block;">
+                </td>
+                
+                <!-- Teks Tengah: Nama & Alamat Sekolah -->
+                <td style="width: 70%; text-align: center; vertical-align: middle; padding: 0 10px;">
+                    <h2 style="font-size: 15px; font-weight: bold; margin: 0; padding: 0; text-transform: uppercase; color: #000;">
+                        {{ $namaSekolah }}
+                    </h2>
+                    <h1 style="font-size: 20px; font-weight: 900; margin: 2px 0; padding: 0; color: #000; letter-spacing: 1px;">
+                        ZIYADATUL ILMI
+                    </h1>
+                    <p style="font-size: 10px; margin: 2px 0 0 0; color: #000; line-height: 1.2;">
+                        Lingkungan Nancang Wetan RT. 004/004 Kel. Karundang Kec. Cipocok Jaya<br>
+                        Kota Serang – Banten HP : <strong>{{ $telepon }}</strong>
+                    </p>
+                </td>
+
+                <!-- Logo Kanan: Logo Kota Serang (OIP.jpg) -->
+                <td style="width: 15%; text-align: right; vertical-align: middle;">
+                    <img src="{{ asset('images/OIP.jpg') }}" alt="Logo Kota Serang" style="max-height: 75px; width: auto; display: inline-block;">
+                </td>
+            </tr>
+        </table>
 
         <!-- Identitas Siswa -->
-        <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px; font-size: 11px; line-height: 1.3;">
+        <table class="no-border" style="width: 100%; border: none; margin-bottom: 10px; font-size: 11px; line-height: 1.3;">
             <tr>
                 <td style="width: 50%; vertical-align: top; padding: 0 5px 0 0;">
                     <table class="no-border" style="width: 100%; border: none;">
@@ -131,7 +157,7 @@
         @endphp
 
         <!-- Tabel Nilai Utama -->
-        <div style="margin-bottom: 12px;">
+        <div style="margin-bottom: 10px;">
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 11px;">
                 <thead>
                     <tr style="background-color: #d1d5db; color: #000; font-weight: bold;">
@@ -195,7 +221,7 @@
         </div>
 
         <!-- Tabel Kepribadian & Ketidak Hadiran -->
-        <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px; font-size: 11px;">
+        <table class="no-border" style="width: 100%; border: none; margin-bottom: 10px; font-size: 11px;">
             <tr>
                 <!-- Table Kepribadian -->
                 <td style="width: 49%; vertical-align: top; padding: 0 1% 0 0;">
@@ -266,7 +292,7 @@
         </table>
 
         <!-- Box Catatan Wali Kelas -->
-        <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 16px; font-size: 11px; min-height: 45px;">
+        <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 14px; font-size: 11px; min-height: 40px;">
             <p style="font-weight: bold; font-style: italic; margin: 0 0 2px 0;">Catatan Wali Kelas :</p>
             <p style="font-style: italic; color: #374151; margin: 0;">Tingkatkan terus semangat belajar dan kedisiplinan dalam beribadah serta mengaji.</p>
         </div>
@@ -274,8 +300,8 @@
         <!-- Tanda Tangan Wali Kelas & Orang Tua -->
         <table class="no-border" style="width: 100%; border: none; font-size: 11px; text-align: center;">
             <tr>
-                <td style="width: 50%; padding-bottom: 35px;">Orang Tua / Wali Siswa,</td>
-                <td style="width: 50%; padding-bottom: 35px;">Wali Kelas,</td>
+                <td style="width: 50%; padding-bottom: 30px;">Orang Tua / Wali Siswa,</td>
+                <td style="width: 50%; padding-bottom: 30px;">Wali Kelas,</td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">( ............................................ )</td>
@@ -285,7 +311,7 @@
 
     </div>
 
-    <!-- Script Export HTML to Word Document (.doc) tanpa Str::slug untuk menghindari Error 500 -->
+    <!-- Script Export HTML to Word Document -->
     <script>
         function exportHTMLToWord(){
             var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
