@@ -38,7 +38,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 py-6">
 
-    <!-- Tombol Aksi -->
+    <!-- Tombol Aksi (Kembali, Cetak PDF, & Download Word) -->
     <div class="max-w-4xl mx-auto px-4 mb-4 flex justify-between items-center no-print">
         <div>
             <h1 class="text-xl font-bold text-gray-800">E-Raport Digital</h1>
@@ -57,35 +57,22 @@
         </div>
     </div>
 
-    <!-- Container Lembar Raport -->
+    <!-- Container Lembar Raport (Layout Dipadatkan untuk 1 Lembar) -->
     <div id="raport-content" class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 print-card page-break-inside-avoid">
         
-        @php
-            $kelas = strtoupper($siswa->kelas ?? '');
-            $isSmp = str_contains($kelas, 'SMP') || str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') || str_contains($kelas, 'IX');
-            $fase = $isSmp ? 'D' : 'F';
-            
-            // Auto-Sync Kop Utama dan Logo Kanan berdasarkan Jenjang (SMP / SMA)
-            $gambarKopLama = $isSmp ? 'Kop SMP Gambar.png' : 'Kop SMA gambar.png';
-            $logoJenjangKanan = $isSmp ? 'smppp.jpg' : 'SMA.jpg';
-        @endphp
+        <!-- Gambar Kop Surat Otomatis Sinkron Sesuai Jenjang (SMP / SMA) -->
+        <div class="mb-3">
+            @php
+                $kelas = strtoupper($siswa->kelas ?? '');
+                $isSmp = str_contains($kelas, 'SMP') || str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') || str_contains($kelas, 'IX');
+                $gambarKop = $isSmp ? 'kop smp web.jpg.jpg' : 'kop sma web.jpg.jpg';
+                $fase = $isSmp ? 'D' : 'F';
+            @endphp
+            <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%; display: block;">
+        </div>
 
-        <!-- Kop Surat Murni Gambar + Logo Kanan Sejajar -->
-        <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px;">
-            <tr>
-                <!-- Gambar Kop Surat Utama -->
-                <td style="width: 85%; vertical-align: middle; padding-right: 10px;">
-                    <img src="{{ asset('images/' . $gambarKopLama) }}" alt="Kop Surat Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%; display: block;">
-                </td>
-                <!-- Logo Tambahan Kanan (SMA.jpg / smppp.jpg) -->
-                <td style="width: 15%; text-align: right; vertical-align: middle;">
-                    <img src="{{ asset('images/' . $logoJenjangKanan) }}" alt="Logo Jenjang" style="max-height: 85px; width: auto; display: inline-block;">
-                </td>
-            </tr>
-        </table>
-
-        <!-- Identitas Siswa -->
-        <table class="no-border" style="width: 100%; border: none; margin-bottom: 10px; font-size: 11px; line-height: 1.3;">
+        <!-- Identitas Siswa (Tabel Murni Kompatibel Word & Cetak) -->
+        <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px; font-size: 11px; line-height: 1.3;">
             <tr>
                 <td style="width: 50%; vertical-align: top; padding: 0 5px 0 0;">
                     <table class="no-border" style="width: 100%; border: none;">
@@ -143,8 +130,8 @@
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
         @endphp
 
-        <!-- Tabel Nilai Utama -->
-        <div style="margin-bottom: 10px;">
+        <!-- Tabel Nilai Utama Sesuai Format Juknis -->
+        <div style="margin-bottom: 12px;">
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 11px;">
                 <thead>
                     <tr style="background-color: #d1d5db; color: #000; font-weight: bold;">
@@ -208,7 +195,7 @@
         </div>
 
         <!-- Tabel Kepribadian & Ketidak Hadiran -->
-        <table class="no-border" style="width: 100%; border: none; margin-bottom: 10px; font-size: 11px;">
+        <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px; font-size: 11px;">
             <tr>
                 <!-- Table Kepribadian -->
                 <td style="width: 49%; vertical-align: top; padding: 0 1% 0 0;">
@@ -279,7 +266,7 @@
         </table>
 
         <!-- Box Catatan Wali Kelas -->
-        <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 14px; font-size: 11px; min-height: 40px;">
+        <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 16px; font-size: 11px; min-height: 45px;">
             <p style="font-weight: bold; font-style: italic; margin: 0 0 2px 0;">Catatan Wali Kelas :</p>
             <p style="font-style: italic; color: #374151; margin: 0;">Tingkatkan terus semangat belajar dan kedisiplinan dalam beribadah serta mengaji.</p>
         </div>
@@ -287,8 +274,8 @@
         <!-- Tanda Tangan Wali Kelas & Orang Tua -->
         <table class="no-border" style="width: 100%; border: none; font-size: 11px; text-align: center;">
             <tr>
-                <td style="width: 50%; padding-bottom: 30px;">Orang Tua / Wali Siswa,</td>
-                <td style="width: 50%; padding-bottom: 30px;">Wali Kelas,</td>
+                <td style="width: 50%; padding-bottom: 35px;">Orang Tua / Wali Siswa,</td>
+                <td style="width: 50%; padding-bottom: 35px;">Wali Kelas,</td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">( ............................................ )</td>
@@ -298,7 +285,7 @@
 
     </div>
 
-    <!-- Script Export HTML to Word Document -->
+    <!-- Script Export HTML to Word Document (.doc) Tanpa Error 500 -->
     <script>
         function exportHTMLToWord(){
             var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
