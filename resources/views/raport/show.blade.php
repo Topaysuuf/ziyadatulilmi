@@ -57,21 +57,32 @@
         </div>
     </div>
 
-    <!-- Container Lembar Raport (Layout Dipadatkan untuk 1 Lembar) -->
+    <!-- Container Lembar Raport -->
     <div id="raport-content" class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200 print-card page-break-inside-avoid">
         
-        <!-- Gambar Kop Surat Otomatis Sinkron Sesuai Jenjang (SMP / SMA) -->
-        <div class="mb-3">
-            @php
-                $kelas = strtoupper($siswa->kelas ?? '');
-                $isSmp = str_contains($kelas, 'SMP') || str_contains($kelas, 'VII') || str_contains($kelas, 'VIII') || str_contains($kelas, 'IX');
-                $gambarKop = $isSmp ? 'kop smp web.jpg.jpg' : 'kop sma web.jpg.jpg';
-                $fase = $isSmp ? 'D' : 'F';
-            @endphp
+        @php
+            $rawKelas = strtoupper($siswa->kelas ?? '');
+            
+            // Cek persis apakah siswa SMP atau SMA
+            $isSmp = str_contains($rawKelas, 'SMP') || str_contains($rawKelas, 'VII') || str_contains($rawKelas, 'VIII') || str_contains($rawKelas, 'IX');
+            
+            // Jika mengandung kata SMA / Kelas 10/11/12/X/XI/XII, secara eksplisit dipastikan SMA
+            $isSma = str_contains($rawKelas, 'SMA') || str_contains($rawKelas, '10') || str_contains($rawKelas, '11') || str_contains($rawKelas, '12') || str_contains($rawKelas, ' X') || str_contains($rawKelas, ' XI') || str_contains($rawKelas, ' XII');
+
+            if ($isSma) {
+                $isSmp = false;
+            }
+
+            $fase = $isSmp ? 'D' : 'F';
+            $gambarKop = $isSmp ? 'kop smp web.jpg.jpg' : 'kop sma web.jpg.jpg';
+        @endphp
+
+        <!-- Gambar Kop Surat Hasil Gabungan (Otomatis Sync SMP / SMA) -->
+        <div class="mb-3 w-full">
             <img src="{{ asset('images/' . $gambarKop) }}" alt="Kop Surat Sekolah Ziyadatul Ilmi" style="width: 100%; height: auto; max-width: 100%; display: block;">
         </div>
 
-        <!-- Identitas Siswa (Tabel Murni Kompatibel Word & Cetak) -->
+        <!-- Identitas Siswa -->
         <table class="no-border" style="width: 100%; border: none; margin-bottom: 12px; font-size: 11px; line-height: 1.3;">
             <tr>
                 <td style="width: 50%; vertical-align: top; padding: 0 5px 0 0;">
@@ -130,7 +141,7 @@
             $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
         @endphp
 
-        <!-- Tabel Nilai Utama Sesuai Format Juknis -->
+        <!-- Tabel Nilai Utama -->
         <div style="margin-bottom: 12px;">
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 11px;">
                 <thead>
@@ -285,7 +296,7 @@
 
     </div>
 
-    <!-- Script Export HTML to Word Document (.doc) Tanpa Error 500 -->
+    <!-- Script Export HTML to Word Document -->
     <script>
         function exportHTMLToWord(){
             var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' "+
