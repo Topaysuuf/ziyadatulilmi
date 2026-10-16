@@ -56,8 +56,8 @@
                         <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Nama Siswa & Kelas</label>
                         <select name="siswa_id" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
                             <option value="">-- Ketik / Pilih Nama Siswa --</option>
-                            @foreach($siswas as$siswa)
-                                <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{$siswa->kelas }})</option>
+                            @foreach($siswas as $siswa)
+                                <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{ $siswa->kelas }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -98,7 +98,7 @@
                                 <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Filter Kelas</label>
                                 <select name="kelas" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
                                     <option value="">-- Semua Kelas --</option>
-                                    @foreach($kelases as$kelas)
+                                    @foreach($kelases as $kelas)
                                         <option value="{{ $kelas }}">{{ $kelas }}</option>
                                     @endforeach
                                 </select>
@@ -145,8 +145,8 @@
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Pilih Nama Siswa & Kelas</label>
                         <select name="siswa_id" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
                             <option value="">-- Pilih Nama Siswa --</option>
-                            @foreach($siswas as$siswa)
-                                <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{$siswa->kelas }})</option>
+                            @foreach($siswas as $siswa)
+                                <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{ $siswa->kelas }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -184,7 +184,7 @@
                     @endphp
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        @foreach($daftarMapel as$mapel)
+                        @foreach($daftarMapel as $mapel)
                         <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 transition">
                             <label class="block text-xs font-semibold text-gray-700 mb-1.5">{{ $mapel }}</label>
                             <input type="number" name="nilai_mapel[{{ $mapel }}]" min="0" max="100" placeholder="0 - 100" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
@@ -214,4 +214,32 @@
                             <th class="p-3">No</th>
                             <th class="p-3">Nama Siswa</th>
                             <th class="p-3">Kelas</th>
-                            <th class="p-3 text-center">Aksi Rap
+                            <th class="p-3 text-center">Aksi Raport</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        @forelse($siswas as $idx => $siswa)
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-3 font-medium text-gray-500">{{ $idx + 1 }}</td>
+                            <td class="p-3 font-semibold text-gray-800">{{ $siswa->nama }}</td>
+                            <td class="p-3 text-gray-600">{{ $siswa->kelas }}</td>
+                            <td class="p-3 text-center">
+                                <a href="{{ route('raport.show', $siswa->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition shadow-sm">
+                                    <i class="fa-solid fa-print"></i> Buka E-Raport
+                                </a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="p-4 text-center text-gray-400 italic">Belum ada data siswa.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
