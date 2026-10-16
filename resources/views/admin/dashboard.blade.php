@@ -215,13 +215,13 @@
                         @foreach($mapelSmp as $mapel)
                         <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 transition">
                             <label class="block text-xs font-semibold text-gray-700 mb-1.5">{{ $mapel }}</label>
-                            <input type="number" name="nilai_mapel[{{ $mapel }}]" min="0" max="100" placeholder="0 - 100" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
+                            <input type="number" name="nilai_mapel[{{ $mapel }}]" min="0" max="100" placeholder="0 - 100" class="input-smp w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
                         </div>
                         @endforeach
                     </div>
                 </div>
 
-                <!-- DAFTAR MAPEL SMA (HIDDEN BY DEFAULT) -->
+                <!-- DAFTAR MAPEL SMA (HIDDEN BY DEFAULT WITH DISABLED INPUTS) -->
                 <div id="container-sma" class="hidden">
                     <label class="block text-xs font-bold text-gray-700 uppercase mb-3">Daftar Mata Pelajaran SMA Ziyadatul Ilmi (0 - 100)</label>
                     @php
@@ -250,7 +250,7 @@
                         @foreach($mapelSma as $mapel)
                         <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 transition">
                             <label class="block text-xs font-semibold text-gray-700 mb-1.5">{{ $mapel }}</label>
-                            <input type="number" name="nilai_mapel[{{ $mapel }}]" min="0" max="100" placeholder="0 - 100" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
+                            <input type="number" name="nilai_mapel[{{ $mapel }}]" disabled min="0" max="100" placeholder="0 - 100" class="input-sma w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
                         </div>
                         @endforeach
                     </div>
@@ -311,16 +311,24 @@
             const containerSma = document.getElementById('container-sma');
             const btnSmp = document.getElementById('btn-smp');
             const btnSma = document.getElementById('btn-sma');
+            const inputsSmp = document.querySelectorAll('.input-smp');
+            const inputsSma = document.querySelectorAll('.input-sma');
 
             if (jenjang === 'SMP') {
                 containerSmp.classList.remove('hidden');
                 containerSma.classList.add('hidden');
                 
+                inputsSmp.forEach(i => i.removeAttribute('disabled'));
+                inputsSma.forEach(i => i.setAttribute('disabled', 'true'));
+
                 btnSmp.className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-[#004d25] text-white shadow-sm transition";
                 btnSma.className = "px-4 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:text-gray-900 transition";
             } else {
                 containerSma.classList.remove('hidden');
                 containerSmp.classList.add('hidden');
+
+                inputsSma.forEach(i => i.removeAttribute('disabled'));
+                inputsSmp.forEach(i => i.setAttribute('disabled', 'true'));
 
                 btnSma.className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-[#004d25] text-white shadow-sm transition";
                 btnSmp.className = "px-4 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:text-gray-900 transition";
