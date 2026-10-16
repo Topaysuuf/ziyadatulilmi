@@ -65,8 +65,6 @@
             
             // Cek persis apakah siswa SMP atau SMA
             $isSmp = str_contains($rawKelas, 'SMP') || str_contains($rawKelas, 'VII') || str_contains($rawKelas, 'VIII') || str_contains($rawKelas, 'IX');
-            
-            // Jika mengandung kata SMA / Kelas 10/11/12/X/XI/XII, secara eksplisit dipastikan SMA
             $isSma = str_contains($rawKelas, 'SMA') || str_contains($rawKelas, '10') || str_contains($rawKelas, '11') || str_contains($rawKelas, '12') || str_contains($rawKelas, ' X') || str_contains($rawKelas, ' XI') || str_contains($rawKelas, ' XII');
 
             if ($isSma) {
