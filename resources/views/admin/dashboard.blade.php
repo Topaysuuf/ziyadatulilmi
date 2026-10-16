@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - SMA Ziyadatul Ilmi</title>
+    <title>Dashboard Admin - Portal Sekolah Ziyadatul Ilmi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -44,7 +44,7 @@
         <!-- Grid Input Absensi & Filter Export Excel Nilai -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            <!-- 1. Input Absensi Harian + Download Excel Absensi + Reset -->
+            <!-- 1. Input Absensi Harian -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
                 <div>
                     <h2 class="text-base font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
@@ -86,7 +86,6 @@
                     </form>
                 </div>
 
-                <!-- Tombol Download Rekap Absensi & Reset Absensi -->
                 <div class="mt-6 pt-4 border-t space-y-2">
                     <a href="{{ route('admin.absensi.export') }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-2">
                         <i class="fa-solid fa-file-excel text-sm"></i> Download Excel Rekap Kehadiran Santri (.XLS)
@@ -101,7 +100,7 @@
                 </div>
             </div>
 
-            <!-- 2. Download Rekap Excel Nilai & Reset Nilai -->
+            <!-- 2. Export Excel Nilai & Reset Nilai -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
                 <div>
                     <h2 class="text-base font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
@@ -144,14 +143,24 @@
 
         </div>
 
-        <!-- 3. FORM INPUT NILAI PERORANGAN (SEMUA MAPEL SEKALIGUS) -->
+        <!-- 3. FORM INPUT NILAI PERORANGAN AKURAT (SMP / SMA) -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
             <div class="mb-4 pb-3 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                     <h2 class="text-base font-bold text-gray-800 flex items-center gap-2">
                         <i class="fa-solid fa-pen-to-square text-[#004d25]"></i> Input Nilai Santri / Siswa (Perorangan)
                     </h2>
-                    <p class="text-xs text-gray-500 mt-0.5">Pilih nama siswa, lalu isi semua nilai mata pelajaran sekaligus dalam satu tampilan.</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Pilih nama siswa, filter jenjang mapel (SMP/SMA), lalu isi semua nilai sekaligus.</p>
+                </div>
+                
+                <!-- Tab Filter Jenjang SMP/SMA -->
+                <div class="flex bg-gray-100 p-1 rounded-xl gap-1">
+                    <button type="button" onclick="switchJenjang('SMP')" id="btn-smp" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-[#004d25] text-white shadow-sm transition">
+                        Jenjang SMP
+                    </button>
+                    <button type="button" onclick="switchJenjang('SMA')" id="btn-sma" class="px-4 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:text-gray-900 transition">
+                        Jenjang SMA
+                    </button>
                 </div>
             </div>
 
@@ -173,37 +182,72 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jenis Ujian / Penilaian</label>
                         <select name="jenis_ujian" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
-                            <option value="UTS">UTS / ASTS</option>
-                            <option value="UAS">UAS / ASAS</option>
+                            <option value="PSTS Ganjil">PSTS Ganjil (Penilaian Sumatif Tengah Semester)</option>
+                            <option value="PAS Ganjil">PAS Ganjil</option>
                             <option value="Ulangan Harian">Ulangan Harian</option>
-                            <option value="Tugas">Tugas</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Grid Seluruh Mata Pelajaran Langsung Tersedia -->
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-3">Daftar Nilai Mata Pelajaran (0 - 100)</label>
-                    
+                <!-- DAFTAR MAPEL SMP -->
+                <div id="container-smp">
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-3">Daftar Mata Pelajaran SMP Ziyadatul Ilmi (0 - 100)</label>
                     @php
-                        $daftarMapel = [
-                            'Pendidikan Agama Islam',
-                            'Pendidikan Pancasila (PPKn)',
+                        $mapelSmp = [
                             'Bahasa Indonesia',
+                            'Bahasa Inggris',
+                            'Bahasa Arab',
                             'Matematika',
                             'IPA',
                             'IPS',
-                            'Bahasa Inggris',
-                            'Seni Budaya',
+                            'PKn',
                             'PJOK',
-                            'Informatika',
-                            'Bahasa Arab',
-                            'Tahfizh / Al-Qur\'an',
+                            'TIK',
+                            'PABD',
+                            'Tajwid / Imla / Pegon',
+                            'Akhlaqul Banin',
+                            'Fiqih / Fasholatan / Yanbua',
+                            'Jurumiyah',
                         ];
                     @endphp
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        @foreach($daftarMapel as $mapel)
+                        @foreach($mapelSmp as $mapel)
+                        <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 transition">
+                            <label class="block text-xs font-semibold text-gray-700 mb-1.5">{{ $mapel }}</label>
+                            <input type="number" name="nilai_mapel[{{ $mapel }}]" min="0" max="100" placeholder="0 - 100" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- DAFTAR MAPEL SMA (HIDDEN BY DEFAULT) -->
+                <div id="container-sma" class="hidden">
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-3">Daftar Mata Pelajaran SMA Ziyadatul Ilmi (0 - 100)</label>
+                    @php
+                        $mapelSma = [
+                            'Bahasa Indonesia',
+                            'Bahasa Inggris',
+                            'Bahasa Arab',
+                            'Matematika',
+                            'PKn',
+                            'PJOK',
+                            'TIK',
+                            'PABD',
+                            'IPS / IPAS / SBK',
+                            'Ekonomi',
+                            'Sejarah',
+                            'Geografi',
+                            'Sosiologi',
+                            'Akhlaqul Banin',
+                            'Jurumiyah / Imriti',
+                            'Durusulfiqiyah / Taqrip / Matan',
+                            'Minahussaniyah',
+                        ];
+                    @endphp
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        @foreach($mapelSma as $mapel)
                         <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 hover:border-gray-300 transition">
                             <label class="block text-xs font-semibold text-gray-700 mb-1.5">{{ $mapel }}</label>
                             <input type="number" name="nilai_mapel[{{ $mapel }}]" min="0" max="100" placeholder="0 - 100" class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
@@ -259,6 +303,30 @@
         </div>
 
     </div>
+
+    <!-- Script Switcher Mapel SMP / SMA -->
+    <script>
+        function switchJenjang(jenjang) {
+            const containerSmp = document.getElementById('container-smp');
+            const containerSma = document.getElementById('container-sma');
+            const btnSmp = document.getElementById('btn-smp');
+            const btnSma = document.getElementById('btn-sma');
+
+            if (jenjang === 'SMP') {
+                containerSmp.classList.remove('hidden');
+                containerSma.classList.add('hidden');
+                
+                btnSmp.className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-[#004d25] text-white shadow-sm transition";
+                btnSma.className = "px-4 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:text-gray-900 transition";
+            } else {
+                containerSma.classList.remove('hidden');
+                containerSmp.classList.add('hidden');
+
+                btnSma.className = "px-4 py-1.5 rounded-lg text-xs font-bold bg-[#004d25] text-white shadow-sm transition";
+                btnSmp.className = "px-4 py-1.5 rounded-lg text-xs font-bold text-gray-600 hover:text-gray-900 transition";
+            }
+        }
+    </script>
 
 </body>
 </html>
