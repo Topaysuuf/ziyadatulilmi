@@ -3,10 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RaportController;
+use App\Http\Controllers\NilaiController;
 
-Route::get('/profil/{slug}', [HomeController::class, 'detailProfil'])->name('profil.detail');
-// Route E-Raport Siswa
-Route::get('/raport/{siswa_id}', [RaportController::class, 'show'])->name('raport.show');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 // 1. Halaman Utama / Beranda
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -18,6 +21,11 @@ Route::get('/profil/{slug}', [HomeController::class, 'detailProfil'])->name('pro
 // 3. Cek Absensi & Nilai Publik
 Route::get('/absensi', [HomeController::class, 'absensi'])->name('absensi');
 Route::get('/nilai', [HomeController::class, 'nilai'])->name('nilai');
+
+// Route Input Nilai Batch & E-Raport Siswa
+Route::post('/nilai/store', [NilaiController::class, 'store'])->name('nilai.store');
+Route::post('/nilai/batch', [NilaiController::class, 'storeBatch'])->name('nilai.storeBatch');
+Route::get('/raport/{siswa_id}', [RaportController::class, 'show'])->name('raport.show');
 
 // 4. Login Admin
 Route::get('/login', function () {
@@ -35,7 +43,7 @@ Route::get('/admin/dashboard', [HomeController::class, 'adminDashboard'])->name(
 Route::post('/admin/ppdb/status/{id}', [HomeController::class, 'updatePpdbStatus'])->name('admin.ppdb.updateStatus');
 Route::delete('/admin/ppdb/delete/{id}', [HomeController::class, 'deletePpdb'])->name('admin.ppdb.delete');
 
-// 7. Input Presensi, Nilai & Reset Admin (Menggunakan Route::any agar bebas dari error 405)
+// 7. Input Presensi, Nilai & Reset Admin
 Route::post('/admin/absensi/store', [HomeController::class, 'storeAbsensi'])->name('admin.absensi.store');
 Route::post('/admin/nilai/store', [HomeController::class, 'storeNilai'])->name('admin.nilai.store');
 Route::any('/admin/absensi/reset', [HomeController::class, 'resetAbsensi'])->name('admin.absensi.reset');
