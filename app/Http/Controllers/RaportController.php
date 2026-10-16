@@ -2,43 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Siswa;
+use App\Models\Nilai;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class RaportController extends Controller
+class NilaiController extends Controller
 {
-    public function show($id)
+    public function index()
     {
-        // 1. Ambil data siswa
-        $siswa = DB::table('siswas')->where('id', $id)->first();
-        
-        if (!$siswa) {
-            return redirect()->route('nilai')->with('error', 'Data siswa tidak ditemukan.');
+        $siswas = Siswa::orderBy('nama', 'asc')->get();
+        return view('nilai', compact('siswas'));
+    }
+
+    // Simpan nilai perorangan (banyak mapel sekaligus untuk 1 siswa)
+    public function storeBatch(Request $request)
+    {
+        $request->validate([
+            'siswa_id' => 'required|exists:siswas,id',
+            'jenis_ujian' => 'required|string',
+            'nilai_mapel' => 'required|array',
+            'nilai_mapel.*' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $siswaId = $request->siswa_id;
+        $jenisUjian = $request->jenis_ujian;
+
+        foreach ($request->nilai_mapel as $mapel => $nilai) {
+            if ($nilai !== null && $nilai !== '') {
+                Nilai::updateOrCreate(
+                    [
+                        'siswa_id' => $siswaId,
+                        'mata_pelajaran' => $mapel,
+                        'jenis_ujian' => $jenisUjian,
+                    ],
+                    [
+                        'nilai' => $nilai,
+                    ]
+                );
+            }
         }
 
-        // 2. Ambil data nilai siswa
-        $nilais = DB::table('nilais')->where('siswa_id', $id)->get();
-
-        // 3. Ambil data absensi siswa (Aman untuk MySQL & SQLite)
-        $absensis = DB::table('absensis')->where('siswa_id', $id)->get();
-
-        // 4. Hitung rekap absensi menggunakan filter PHP (Bebas dari error SQL 500)
-        $sakit = $absensis->filter(function($a) {
-            $status = strtolower(trim($a->status ?? ''));
-            return in_array($status, ['sakit', 's']);
-        })->count();
-
-        $izin = $absensis->filter(function($a) {
-            $status = strtolower(trim($a->status ?? ''));
-            return in_array($status, ['izin', 'ijin', 'i']);
-        })->count();
-
-        $alpa = $absensis->filter(function($a) {
-            $status = strtolower(trim($a->status ?? ''));
-            return in_array($status, ['alpa', 'alpha', 'tanpa keterangan', 'a', 'tk']);
-        })->count();
-
-        // 5. Kirim semua variabel ke view raport.show
-        return view('raport.show', compact('siswa', 'nilais', 'sakit', 'izin', 'alpa'));
+        return redirect()->back()->with('success', 'Berhasil menyimpan semua nilai untuk siswa tersebut!');
     }
 }
