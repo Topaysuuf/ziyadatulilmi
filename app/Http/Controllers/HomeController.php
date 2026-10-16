@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Siswa;
 use App\Models\Absensi;
 use App\Models\Nilai;
-use App\Models\Ppdb; // Jika model PPDB/SPMB bernama Ppdb atau Pendaftar
+use App\Models\Ppdb;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
@@ -16,7 +16,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('welcome'); // atau view('home') sesuai template beranda kamu
+        return view('welcome');
     }
 
     /**
@@ -65,6 +65,7 @@ class HomeController extends Controller
 
         return redirect()->route('home');
     }
+
     /**
      * 3. Cek Absensi Publik (/absensi)
      */
@@ -157,10 +158,54 @@ class HomeController extends Controller
     }
 
     /**
-     * 7. Simpan Nilai Admin
+     * 7. Simpan Nilai Admin (Mendukung Input Banyak Mapel Sekaligus Per Siswa)
      */
     public function storeNilai(Request $request)
     {
+        // Jika inputan berupa array perorangan (banyak mapel sekaligus)
+        if ($request->has('nilai_mapel') && is_array($request->nilai_mapel)) {
+            $request->validate([
+                'siswa_id'    => 'required',
+                'jenis_ujian' => 'required|string',
+                'nilai_mapel' => 'required|array',
+            ]);
+
+            $siswaId = $request->siswa_id;
+            $jenisUjian = $request->jenis_ujian;
+
+            foreach ($request->nilai_mapel as $mapel => $nilai) {
+                if ($nilai !== null && $nilai !== '') {
+                    if (class_exists('App\Models\Nilai')) {
+                        Nilai::updateOrCreate(
+                            [
+                                'siswa_id'       => $siswaId,
+                                'mata_pelajaran' => $mapel,
+                                'jenis_ujian'    => $jenisUjian,
+                            ],
+                            [
+                                'nilai'          => $nilai,
+                            ]
+                        );
+                    } else {
+                        DB::table('nilais')->updateOrInsert(
+                            [
+                                'siswa_id'       => $siswaId,
+                                'mata_pelajaran' => $mapel,
+                                'jenis_ujian'    => $jenisUjian,
+                            ],
+                            [
+                                'nilai'          => $nilai,
+                                'updated_at'     => now(),
+                            ]
+                        );
+                    }
+                }
+            }
+
+            return redirect()->back()->with('success', 'Seluruh nilai mata pelajaran siswa berhasil disimpan!');
+        }
+
+        // Jalur cadangan untuk simpan single mapel
         $request->validate([
             'siswa_id'       => 'required',
             'mata_pelajaran' => 'required|string',
@@ -169,21 +214,28 @@ class HomeController extends Controller
         ]);
 
         if (class_exists('App\Models\Nilai')) {
-            Nilai::create([
-                'siswa_id'       => $request->siswa_id,
-                'mata_pelajaran' => $request->mata_pelajaran,
-                'jenis_ujian'    => $request->jenis_ujian,
-                'nilai'          => $request->nilai,
-            ]);
+            Nilai::updateOrCreate(
+                [
+                    'siswa_id'       => $request->siswa_id,
+                    'mata_pelajaran' => $request->mata_pelajaran,
+                    'jenis_ujian'    => $request->jenis_ujian,
+                ],
+                [
+                    'nilai'          => $request->nilai,
+                ]
+            );
         } else {
-            DB::table('nilais')->insert([
-                'siswa_id'       => $request->siswa_id,
-                'mata_pelajaran' => $request->mata_pelajaran,
-                'jenis_ujian'    => $request->jenis_ujian,
-                'nilai'          => $request->nilai,
-                'created_at'     => now(),
-                'updated_at'     => now(),
-            ]);
+            DB::table('nilais')->updateOrInsert(
+                [
+                    'siswa_id'       => $request->siswa_id,
+                    'mata_pelajaran' => $request->mata_pelajaran,
+                    'jenis_ujian'    => $request->jenis_ujian,
+                ],
+                [
+                    'nilai'          => $request->nilai,
+                    'updated_at'     => now(),
+                ]
+            );
         }
 
         return redirect()->back()->with('success', 'Nilai ujian berhasil disimpan!');
@@ -213,7 +265,7 @@ class HomeController extends Controller
     }
 
     /**
-     * 8. Export Rekap Absensi ke Format Excel (.xls) Rekapitulasi Lengkap
+     * 8. Export Rekap Absensi ke Format Excel (.xls)
      */
     public function exportAbsensi()
     {
