@@ -41,7 +41,7 @@
         </div>
         @endif
 
-        <!-- Grid Input Absensi & Filter Export Excel Nilai -->
+        <!-- Grid Input Absensi & Filter Export Excel / Reset Nilai -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             <!-- 1. Input Absensi Harian -->
@@ -83,9 +83,18 @@
                         Simpan Absensi
                     </button>
                 </form>
+
+                <div class="mt-4 pt-3 border-t">
+                    <form action="{{ route('admin.absensi.reset') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MENGHAPUS SELURUH data absensi?')">
+                        @csrf
+                        <button type="submit" class="w-full bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-2 rounded-xl text-xs transition border border-red-200 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-trash-can"></i> Reset Seluruh Data Absensi
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <!-- 2. Download Rekap Excel Nilai -->
+            <!-- 2. Download Rekap Excel Nilai & Reset Nilai -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
                 <div>
                     <h2 class="text-base font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
@@ -116,10 +125,18 @@
                     </form>
                 </div>
 
-                <div class="mt-4 pt-4 border-t flex gap-2">
-                    <a href="{{ route('admin.absensi.export') }}" class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-lg transition">
-                        📊 Export Rekap Absensi
+                <div class="mt-4 pt-4 border-t space-y-2">
+                    <a href="{{ route('admin.absensi.export') }}" class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-xl transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-file-export"></i> Export Rekap Absensi
                     </a>
+
+                    <!-- Tombol Reset Seluruh Nilai -->
+                    <form action="{{ route('admin.nilai.reset') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MENGHAPUS SELURUH data nilai?')">
+                        @csrf
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-arrow-rotate-right"></i> Reset Seluruh Data Nilai
+                        </button>
+                    </form>
                 </div>
             </div>
 
