@@ -41,50 +41,57 @@
         </div>
         @endif
 
-        <!-- Grid Input Absensi & Filter Export Excel / Reset Nilai -->
+        <!-- Grid Input Absensi & Filter Export Excel Nilai -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            <!-- 1. Input Absensi Harian -->
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                <h2 class="text-base font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-check text-[#004d25]"></i> Input Kehadiran Santri
-                </h2>
+            <!-- 1. Input Absensi Harian + Download Excel Absensi + Reset -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-[#004d25]"></i> Input Kehadiran Santri
+                    </h2>
 
-                <form action="{{ route('admin.absensi.store') }}" method="POST" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Nama Siswa & Kelas</label>
-                        <select name="siswa_id" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
-                            <option value="">-- Ketik / Pilih Nama Siswa --</option>
-                            @foreach($siswas as $siswa)
-                                <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{ $siswa->kelas }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <form action="{{ route('admin.absensi.store') }}" method="POST" class="space-y-4">
+                        @csrf
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Tanggal</label>
-                            <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Status Kehadiran</label>
-                            <select name="status" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
-                                <option value="Hadir">Hadir</option>
-                                <option value="Izin">Izin</option>
-                                <option value="Sakit">Sakit</option>
-                                <option value="Alpa">Alpa</option>
+                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Nama Siswa & Kelas</label>
+                            <select name="siswa_id" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
+                                <option value="">-- Ketik / Pilih Nama Siswa --</option>
+                                @foreach($siswas as $siswa)
+                                    <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{ $siswa->kelas }})</option>
+                                @endforeach
                             </select>
                         </div>
-                    </div>
 
-                    <button type="submit" class="w-full bg-[#004d25] hover:bg-[#00381b] text-white font-bold py-2.5 rounded-xl text-sm transition shadow-sm mt-2">
-                        Simpan Absensi
-                    </button>
-                </form>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Tanggal</label>
+                                <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none">
+                            </div>
 
-                <div class="mt-4 pt-3 border-t">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Status Kehadiran</label>
+                                <select name="status" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
+                                    <option value="Hadir">Hadir</option>
+                                    <option value="Izin">Izin</option>
+                                    <option value="Sakit">Sakit</option>
+                                    <option value="Alpa">Alpa</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-[#004d25] hover:bg-[#00381b] text-white font-bold py-2.5 rounded-xl text-sm transition shadow-sm mt-2">
+                            Simpan Absensi
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tombol Download Rekap Absensi & Reset Absensi -->
+                <div class="mt-6 pt-4 border-t space-y-2">
+                    <a href="{{ route('admin.absensi.export') }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-excel text-sm"></i> Download Excel Rekap Kehadiran Santri (.XLS)
+                    </a>
+
                     <form action="{{ route('admin.absensi.reset') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MENGHAPUS SELURUH data absensi?')">
                         @csrf
                         <button type="submit" class="w-full bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-2 rounded-xl text-xs transition border border-red-200 flex items-center justify-center gap-1.5">
@@ -125,12 +132,7 @@
                     </form>
                 </div>
 
-                <div class="mt-4 pt-4 border-t space-y-2">
-                    <a href="{{ route('admin.absensi.export') }}" class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 rounded-xl transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-file-export"></i> Export Rekap Absensi
-                    </a>
-
-                    <!-- Tombol Reset Seluruh Nilai -->
+                <div class="mt-6 pt-4 border-t space-y-2">
                     <form action="{{ route('admin.nilai.reset') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MENGHAPUS SELURUH data nilai?')">
                         @csrf
                         <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
