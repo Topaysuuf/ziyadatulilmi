@@ -42,10 +42,10 @@
     <div class="max-w-4xl mx-auto px-4 mb-4 flex justify-between items-center no-print">
         <div>
             <h1 class="text-xl font-bold text-gray-800">E-Raport Digital</h1>
-            <p class="text-xs text-gray-500">Laporan Hasil Belajar Siswa</p>
+            <p class="text-xs text-gray-500">Laporan Hasil Belajar PSTS Ganjil</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route('nilai') }}" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-300 transition">
+            <a href="{{ route('admin.dashboard') }}" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-300 transition">
                 ← Kembali
             </a>
             <button onclick="window.print()" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm">
@@ -64,15 +64,147 @@
             $rawKelas = strtoupper($siswa->kelas ?? '');
             
             // Cek persis apakah siswa SMP atau SMA
-            $isSmp = str_contains($rawKelas, 'SMP') || str_contains($rawKelas, 'VII') || str_contains($rawKelas, 'VIII') || str_contains($rawKelas, 'IX');
-            $isSma = str_contains($rawKelas, 'SMA') || str_contains($rawKelas, '10') || str_contains($rawKelas, '11') || str_contains($rawKelas, '12') || str_contains($rawKelas, ' X') || str_contains($rawKelas, ' XI') || str_contains($rawKelas, ' XII');
+            $isSmp = str_contains($rawKelas, 'SMP') || str_contains($rawKelas, 'VII') || str_contains($rawKelas, 'VIII') || str_contains($rawKelas, 'IX') || str_contains($rawKelas, '7') || str_contains($rawKelas, '8') || str_contains($rawKelas, '9');
+            $isSma = str_contains($rawKelas, 'SMA') || str_contains($rawKelas, 'X') || str_contains($rawKelas, 'XI') || str_contains($rawKelas, 'XII') || str_contains($rawKelas, '10') || str_contains($rawKelas, '11') || str_contains($rawKelas, '12');
 
             if ($isSma) {
                 $isSmp = false;
             }
 
-            $fase = $isSmp ? 'D' : 'F';
             $gambarKop = $isSmp ? 'kop smp web.jpg.jpg' : 'kop sma web.jpg.jpg';
+
+            // Penentuan Fase & Nama Sekolah
+            if ($isSmp) {
+                $namaSekolah = 'SMP ZIYADATUL ILMI';
+                $fase = 'E';
+            } else {
+                $namaSekolah = 'SMA ZIYADATUL ILMI';
+                $fase = 'F';
+            }
+
+            // Struktur Kategori Mapel Persis Dokumen
+            // Normalisasi Mapel dari Database
+            $nilaiMap = [];
+            foreach($nilais ?? [] as $n) {
+                $nilaiMap[strtolower(trim($n->mata_pelajaran))] = $n->nilai;
+            }
+
+            // Template Pengelompokan Berdasarkan Kelas
+            $kategoriMapel = [];
+
+            if (!$isSmp) {
+                // JENJANG SMA
+                if (str_contains($rawKelas, '10') || str_contains($rawKelas, ' X') || str_ends_with($rawKelas, 'X')) {
+                    // SMA Kelas X
+                    $kategoriMapel = [
+                        'A. Muatan Lokal Pesantren' => [
+                            'Nahwu Jurumiyah', 'Nahwu Imriti', 'Durusulfiqiyah', 'Akhlaqul Banin', 'B. Arab', 'Taqrib/Matan', 'Minhussaniyah'
+                        ],
+                        'B. Mata Pelajaran Umum' => [
+                            'Pendidikan Agama Islam dan Budi Pekerti',
+                            'Pendidikan Pancasila dan Kewarganegaraan',
+                            'Bahasa Indonesia',
+                            'Matematika',
+                            'Ilmu Pengetahuan Alam',
+                            'Ilmu Pengetahuan Sosial',
+                            'Bahasa Inggris',
+                            'Pendidikan Jasmani Olahraga dan Kesehatan',
+                            'Informatika',
+                            'Seni Budaya'
+                        ]
+                    ];
+                } else {
+                    // SMA Kelas XI & XII
+                    $kategoriMapel = [
+                        'A. Muatan Lokal Pesantren' => [
+                            'Nahwu Jurumiyah', 'Nahwu Imriti', 'Durusulfiqiyah', 'Akhlaqul Banin', 'B. Arab', 'Taqrib/Matan', 'Minhussaniyah'
+                        ],
+                        'B. Mata Pelajaran Umum' => [
+                            'Pendidikan Agama Islam dan Budi Pekerti',
+                            'Pendidikan Pancasila dan Kewarganegaraan',
+                            'Bahasa Indonesia',
+                            'Matematika',
+                            'Ilmu Pengetahuan Alam',
+                            'Ilmu Pengetahuan Sosial',
+                            'Bahasa Inggris',
+                            'Pendidikan Jasmani Olahraga dan Kesehatan',
+                            'Informatika'
+                        ],
+                        'C. Mata Pelajaran Jurusan' => [
+                            'Sosiologi', 'Sejarah', 'Geografi', 'Ekonomi'
+                        ]
+                    ];
+                }
+            } else {
+                // JENJANG SMP
+                if (str_contains($rawKelas, '7') || str_contains($rawKelas, 'VII')) {
+                    // SMP Kelas VII
+                    $kategoriMapel = [
+                        'A. Muatan Lokal Pesantren' => [
+                            'Imla/Pegon', 'Bahasa Arab', 'Yanbua', 'Fasholatan'
+                        ],
+                        'B. Mata Pelajaran Umum' => [
+                            'Pendidikan Agama Islam dan Budi Pekerti',
+                            'Pendidikan Pancasila dan Kewarganegaraan',
+                            'Bahasa Indonesia',
+                            'Matematika',
+                            'Ilmu Pengetahuan Alam',
+                            'Ilmu Pengetahuan Sosial',
+                            'Bahasa Inggris',
+                            'Pendidikan Jasmani Olahraga dan Kesehatan',
+                            'Informatika'
+                        ]
+                    ];
+                } else {
+                    // SMP Kelas VIII & IX
+                    $kategoriMapel = [
+                        'A. Muatan Lokal Pesantren' => [
+                            'Tajwid', 'Bahasa Arab', 'Akhlaqul Banin', 'Fiqih', 'Jurumiyah'
+                        ],
+                        'B. Mata Pelajaran Umum' => [
+                            'Pendidikan Agama Islam dan Budi Pekerti',
+                            'Pendidikan Pancasila dan Kewarganegaraan',
+                            'Bahasa Indonesia',
+                            'Matematika',
+                            'Ilmu Pengetahuan Alam',
+                            'Ilmu Pengetahuan Sosial',
+                            'Bahasa Inggris',
+                            'Pendidikan Jasmani Olahraga dan Kesehatan',
+                            'Informatika'
+                        ]
+                    ];
+                }
+            }
+
+            // Fungsi Helper untuk pencocokan nama mapel dari DB
+            $findScore = function($targetMapel) use ($nilaiMap) {
+                $targetLower = strtolower(trim($targetMapel));
+                if (isset($nilaiMap[$targetLower])) return $nilaiMap[$targetLower];
+
+                // Alias Matching
+                foreach($nilaiMap as $mapelDb => $score) {
+                    if (str_contains($mapelDb, $targetLower) || str_contains($targetLower, $mapelDb)) {
+                        return $score;
+                    }
+                    if ($targetLower == 'pendidikan pancasila dan kewarganegaraan' && (str_contains($mapelDb, 'pkn') || str_contains($mapelDb, 'pancasila'))) return $score;
+                    if ($targetLower == 'pendidikan agama islam dan budi pekerti' && (str_contains($mapelDb, 'pabd') || str_contains($mapelDb, 'pai'))) return $score;
+                    if ($targetLower == 'ilmu pengetahuan alam' && $mapelDb == 'ipa') return $score;
+                    if ($targetLower == 'ilmu pengetahuan sosial' && $mapelDb == 'ips') return $score;
+                    if ($targetLower == 'pendidikan jasmani olahraga dan kesehatan' && $mapelDb == 'pjok') return $score;
+                    if ($targetLower == 'informatika' && $mapelDb == 'tik') return $score;
+                    if ($targetLower == 'b. arab' && str_contains($mapelDb, 'arab')) return $score;
+                    if ($targetLower == 'nahwu jurumiyah' && str_contains($mapelDb, 'jurumiyah')) return $score;
+                    if ($targetLower == 'taqrib/matan' && (str_contains($mapelDb, 'taqrip') || str_contains($mapelDb, 'matan'))) return $score;
+                    if ($targetLower == 'durusulfiqiyah' && str_contains($mapelDb, 'durusulfiqiyah')) return $score;
+                    if ($targetLower == 'imla/pegon' && (str_contains($mapelDb, 'imla') || str_contains($mapelDb, 'pegon') || str_contains($mapelDb, 'tajwid'))) return $score;
+                    if ($targetLower == 'fiqih / fasholatan / yanbua' && (str_contains($mapelDb, 'fiqih') || str_contains($mapelDb, 'fasholatan') || str_contains($mapelDb, 'yanbua'))) return $score;
+                }
+                return null;
+            };
+
+            $totalNilai = 0;
+            $countNilai = 0;
+            $kkmDefault = 75;
         @endphp
 
         <!-- Gambar Kop Surat Hasil Gabungan (Otomatis Sync SMP / SMA) -->
@@ -86,19 +218,19 @@
                 <td style="width: 50%; vertical-align: top; padding: 0 5px 0 0;">
                     <table class="no-border" style="width: 100%; border: none;">
                         <tr>
-                            <td style="width: 95px; font-weight: bold; color: #374151; padding: 1px 0;">Nama</td>
-                            <td style="padding: 1px 0;">: <span style="font-weight: bold; color: #111827; text-transform: uppercase;">{{ $siswa->nama ?? '-' }}</span></td>
+                            <td style="width: 95px; color: #000; padding: 1px 0;">Nama</td>
+                            <td style="padding: 1px 0;">: <span style="font-weight: bold; text-transform: uppercase;">{{ $siswa->nama ?? '' }}</span></td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">NISN / NIS</td>
-                            <td style="padding: 1px 0;">: {{ $siswa->nisn ?? $siswa->nis ?? '-' }}</td>
+                            <td style="color: #000; padding: 1px 0;">NISN / NIS</td>
+                            <td style="padding: 1px 0;">: {{ $siswa->nisn ?? $siswa->nis ?? '' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Nama Sekolah</td>
-                            <td style="padding: 1px 0;">: {{ $isSmp ? 'SMP ZIYADATUL ILMI KOTA SERANG' : 'SMA ZIYADATUL ILMI KOTA SERANG' }}</td>
+                            <td style="color: #000; padding: 1px 0;">Nama Sekolah</td>
+                            <td style="padding: 1px 0;">: {{ $namaSekolah }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Alamat</td>
+                            <td style="color: #000; padding: 1px 0;">Alamat</td>
                             <td style="padding: 1px 0;">: Jl. Nancang Wetan, Karundang, Cipocok Jaya</td>
                         </tr>
                     </table>
@@ -106,19 +238,19 @@
                 <td style="width: 50%; vertical-align: top; padding: 0 0 0 5px;">
                     <table class="no-border" style="width: 100%; border: none;">
                         <tr>
-                            <td style="width: 95px; font-weight: bold; color: #374151; padding: 1px 0;">Kelas</td>
-                            <td style="padding: 1px 0;">: <span style="font-weight: bold;">{{ $siswa->kelas ?? '-' }}</span></td>
+                            <td style="width: 95px; color: #000; padding: 1px 0;">Kelas</td>
+                            <td style="padding: 1px 0;">: {{ $siswa->kelas ?? '' }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Fase</td>
+                            <td style="color: #000; padding: 1px 0;">Fase</td>
                             <td style="padding: 1px 0;">: {{ $fase }}</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Semester</td>
+                            <td style="color: #000; padding: 1px 0;">Semester</td>
                             <td style="padding: 1px 0;">: 1 (Satu) / Ganjil</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: bold; color: #374151; padding: 1px 0;">Tahun Pelajaran</td>
+                            <td style="color: #000; padding: 1px 0;">Tahun Pelajaran</td>
                             <td style="padding: 1px 0;">: 2026/2027</td>
                         </tr>
                     </table>
@@ -126,77 +258,67 @@
             </tr>
         </table>
 
-        @php
-            $totalNilai = 0;
-            $countNilai = 0;
-            $kkmDefault = 75;
-
-            foreach($nilais ?? [] as $n) {
-                $totalNilai += $n->nilai;
-                $countNilai++;
-            }
-            
-            $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
-        @endphp
-
-        <!-- Tabel Nilai Utama -->
+        <!-- Tabel Nilai Utama Persis Format Docx -->
         <div style="margin-bottom: 12px;">
             <table style="width: 100%; border-collapse: collapse; border: 1px solid #000; font-size: 11px;">
                 <thead>
-                    <tr style="background-color: #d1d5db; color: #000; font-weight: bold;">
-                        <th rowspan="2" style="border: 1px solid #000; padding: 4px; text-align: center; width: 30px; vertical-align: middle;">NO.</th>
-                        <th rowspan="2" style="border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle;">Nama Pelajaran</th>
-                        <th colspan="3" style="border: 1px solid #000; padding: 2px; text-align: center;">Nilai Murni ASTS</th>
-                    </tr>
-                    <tr style="background-color: #d1d5db; color: #000; font-weight: bold;">
-                        <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 45px;">KKM</th>
-                        <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 50px;">NILAI</th>
-                        <th style="border: 1px solid #000; padding: 2px; text-align: center; width: 50%;">CAPAIAN KOMPETENSI</th>
+                    <tr style="background-color: #ffffff; color: #000; font-weight: bold;">
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 35px;">NO</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center;">NAMA PELAJARAN</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 45px;">KKM</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 50px;">NILAI</th>
+                        <th style="border: 1px solid #000; padding: 4px; text-align: center; width: 45%;">CAPAIAN KOMPETENSI</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($nilais ?? [] as $index => $nilai)
-                        @php
-                            $score = $nilai->nilai;
-                            $mapel = $nilai->mata_pelajaran;
-                            
-                            if ($score >= 85) {
-                                $capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $mapel.";
-                            } elseif ($score >= $kkmDefault) {
-                                $capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $mapel.";
-                            } else {
-                                $capaian = "Perlu bimbingan dan pendampingan khusus dalam memahami materi $mapel.";
-                            }
-                        @endphp
-                        <tr>
-                            <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $index + 1 }}</td>
-                            <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">
-                                {{ $mapel }}
-                                @if(!empty($nilai->jenis_ujian))
-                                    <span style="font-size: 10px; font-weight: normal; color: #4b5563;">({{ $nilai->jenis_ujian }})</span>
-                                @endif
-                            </td>
-                            <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $kkmDefault }}</td>
-                            <td style="border: 1px solid #000; padding: 4px; text-align: center; font-weight: bold;">{{ $score }}</td>
-                            <td style="border: 1px solid #000; padding: 4px; font-size: 10px; line-height: 1.2;">{{ $capaian }}</td>
+                    @foreach($kategoriMapel as $kategori => $mapels)
+                        <!-- Header Kategori (A, B, C) -->
+                        <tr style="font-weight: bold; background-color: #f3f4f6;">
+                            <td colspan="5" style="border: 1px solid #000; padding: 4px 8px;">{{ $kategori }}</td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" style="border: 1px solid #000; padding: 8px; text-align: center; color: #9ca3af; font-style: italic;">
-                                Belum ada data nilai yang diinput oleh guru/admin.
-                            </td>
-                        </tr>
-                    @endforelse
 
-                    <!-- Summary / Total & Rata-rata -->
-                    <tr style="font-weight: bold; background-color: #f9fafb;">
-                        <td colspan="3" style="border: 1px solid #000; padding: 4px; text-align: right;">Jumlah Nilai :</td>
-                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $totalNilai > 0 ? $totalNilai : '-' }}</td>
+                        @foreach($mapels as $idx => $itemMapel)
+                            @php
+                                $score = $findScore($itemMapel);
+                                
+                                if ($score !== null) {
+                                    $totalNilai += $score;
+                                    $countNilai++;
+
+                                    if ($score >= 85) {
+                                        $capaian = "Menunjukkan penguasaan yang sangat baik dalam memahami materi $itemMapel.";
+                                    } elseif ($score >= $kkmDefault) {
+                                        $capaian = "Menunjukkan penguasaan yang baik dalam memahami materi $itemMapel.";
+                                    } else {
+                                        $capaian = "Perlu bimbingan dan pendampingan khusus dalam memahami materi $itemMapel.";
+                                    }
+                                } else {
+                                    $capaian = "";
+                                }
+                            @endphp
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center;">{{ $idx + 1 }}</td>
+                                <td style="border: 1px solid #000; padding: 3px 6px;">{{ $itemMapel }}</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center;">{{ $score !== null ? $kkmDefault : '' }}</td>
+                                <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">{{ $score !== null ? $score : '' }}</td>
+                                <td style="border: 1px solid #000; padding: 3px 6px; font-size: 10px; line-height: 1.2;">{{ $capaian }}</td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+
+                    @php
+                        $rataRata = $countNilai > 0 ? round($totalNilai / $countNilai, 2) : 0;
+                    @endphp
+
+                    <!-- Summary JUMLAH NILAI & NILAI RATA-RATA -->
+                    <tr style="font-weight: bold;">
+                        <td colspan="3" style="border: 1px solid #000; padding: 4px 8px; text-align: left;">JUMLAH NILAI</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $totalNilai > 0 ? $totalNilai : '' }}</td>
                         <td style="border: 1px solid #000; padding: 4px;"></td>
                     </tr>
-                    <tr style="font-weight: bold; background-color: #f9fafb;">
-                        <td colspan="3" style="border: 1px solid #000; padding: 4px; text-align: right;">Nilai Rata-rata Mata Pelajaran :</td>
-                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $rataRata > 0 ? $rataRata : '-' }}</td>
+                    <tr style="font-weight: bold;">
+                        <td colspan="3" style="border: 1px solid #000; padding: 4px 8px; text-align: left;">NILAI RATA-RATA</td>
+                        <td style="border: 1px solid #000; padding: 4px; text-align: center;">{{ $rataRata > 0 ? $rataRata : '' }}</td>
                         <td style="border: 1px solid #000; padding: 4px;"></td>
                     </tr>
                 </tbody>
@@ -210,11 +332,11 @@
                 <td style="width: 49%; vertical-align: top; padding: 0 1% 0 0;">
                     <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
                         <thead>
-                            <tr style="background-color: #d1d5db; font-weight: bold;">
+                            <tr style="font-weight: bold;">
                                 <th colspan="3" style="border: 1px solid #000; padding: 3px; text-align: center;">KEPRIBADIAN</th>
                             </tr>
-                            <tr style="background-color: #e5e7eb; font-weight: bold;">
-                                <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 30px;">NO.</th>
+                            <tr style="font-weight: bold;">
+                                <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 30px;">NO</th>
                                 <th style="border: 1px solid #000; padding: 3px; text-align: center;">ASPEK</th>
                                 <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 45px;">NILAI</th>
                             </tr>
@@ -222,17 +344,17 @@
                         <tbody>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center;">1</td>
-                                <td style="border: 1px solid #000; padding: 3px;">Kelakuan</td>
+                                <td style="border: 1px solid #000; padding: 3px 6px;">Kelakuan</td>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">B</td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center;">2</td>
-                                <td style="border: 1px solid #000; padding: 3px;">Kerajinan</td>
+                                <td style="border: 1px solid #000; padding: 3px 6px;">Kerajinan</td>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">B</td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center;">3</td>
-                                <td style="border: 1px solid #000; padding: 3px;">Kebersihan/Kerapihan</td>
+                                <td style="border: 1px solid #000; padding: 3px 6px;">Kebersihan/Kerapihan</td>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">B</td>
                             </tr>
                         </tbody>
@@ -243,11 +365,11 @@
                 <td style="width: 49%; vertical-align: top; padding: 0 0 0 1%;">
                     <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
                         <thead>
-                            <tr style="background-color: #d1d5db; font-weight: bold;">
+                            <tr style="font-weight: bold;">
                                 <th colspan="3" style="border: 1px solid #000; padding: 3px; text-align: center;">KETIDAK HADIRAN</th>
                             </tr>
-                            <tr style="background-color: #e5e7eb; font-weight: bold;">
-                                <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 30px;">NO.</th>
+                            <tr style="font-weight: bold;">
+                                <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 30px;">NO</th>
                                 <th style="border: 1px solid #000; padding: 3px; text-align: center;">ALASAN</th>
                                 <th style="border: 1px solid #000; padding: 3px; text-align: center; width: 45px;">HARI</th>
                             </tr>
@@ -255,17 +377,17 @@
                         <tbody>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center;">1</td>
-                                <td style="border: 1px solid #000; padding: 3px;">Sakit</td>
+                                <td style="border: 1px solid #000; padding: 3px 6px;">Sakit</td>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">{{ $sakit ?? 0 }}</td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center;">2</td>
-                                <td style="border: 1px solid #000; padding: 3px;">Izin</td>
+                                <td style="border: 1px solid #000; padding: 3px 6px;">Izin</td>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">{{ $izin ?? 0 }}</td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center;">3</td>
-                                <td style="border: 1px solid #000; padding: 3px;">Tanpa Keterangan</td>
+                                <td style="border: 1px solid #000; padding: 3px 6px;">Tanpa Keterangan</td>
                                 <td style="border: 1px solid #000; padding: 3px; text-align: center; font-weight: bold;">{{ $alpa ?? 0 }}</td>
                             </tr>
                         </tbody>
@@ -275,20 +397,30 @@
         </table>
 
         <!-- Box Catatan Wali Kelas -->
-        <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 16px; font-size: 11px; min-height: 45px;">
-            <p style="font-weight: bold; font-style: italic; margin: 0 0 2px 0;">Catatan Wali Kelas :</p>
+        <div style="border: 1px solid #000; padding: 6px 8px; margin-bottom: 12px; font-size: 11px; min-height: 45px;">
+            <p style="font-weight: bold; margin: 0 0 2px 0;">Catatan Wali Kelas:</p>
             <p style="font-style: italic; color: #374151; margin: 0;">Tingkatkan terus semangat belajar dan kedisiplinan dalam beribadah serta mengaji.</p>
         </div>
 
-        <!-- Tanda Tangan Wali Kelas & Orang Tua -->
+        <!-- Tanggal & Tanda Tangan Wali Kelas & Orang Tua Persis Dokumen -->
+        <div style="font-size: 11px; text-align: right; margin-bottom: 10px; padding-right: 10%;">
+            Serang, 1 November 2026
+        </div>
+
         <table class="no-border" style="width: 100%; border: none; font-size: 11px; text-align: center;">
             <tr>
-                <td style="width: 50%; padding-bottom: 35px;">Orang Tua / Wali Siswa,</td>
-                <td style="width: 50%; padding-bottom: 35px;">Wali Kelas,</td>
+                <td colspan="2" style="font-weight: bold; padding-bottom: 10px;">Mengetahui,</td>
+            </tr>
+            <tr>
+                <td style="width: 50%; padding-bottom: 45px;">Wali/ Orang Tua</td>
+                <td style="width: 50%; padding-bottom: 45px;">Wali Kelas</td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">( ............................................ )</td>
-                <td style="font-weight: bold;">( ............................................ )</td>
+                <td style="font-weight: bold;">
+                    ( ............................................ )<br>
+                    <span style="font-weight: normal;">NIP: -</span>
+                </td>
             </tr>
         </table>
 
