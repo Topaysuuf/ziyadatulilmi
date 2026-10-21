@@ -6,6 +6,21 @@
     <title>Dashboard Admin - Portal Sekolah Ziyadatul Ilmi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tom Select (Fitur Ketik & Cari Nama Siswa) -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <style>
+        .ts-control {
+            border-radius: 0.75rem !important;
+            padding: 0.5rem 0.75rem !important;
+            font-size: 0.875rem !important;
+            border-color: #d1d5db !important;
+        }
+        .ts-wrapper.single .ts-control {
+            background-color: #ffffff !important;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
@@ -44,7 +59,7 @@
         <!-- Grid Input Absensi & Filter Export Excel Nilai -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            <!-- 1. Input Absensi Harian -->
+            <!-- 1. Input Absensi Harian (Bisa Ketik / Cari Nama) -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
                 <div>
                     <h2 class="text-base font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
@@ -55,10 +70,14 @@
                         @csrf
                         <div>
                             <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Nama Siswa & Kelas</label>
-                            <select name="siswa_id" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
-                                <option value="">-- Ketik / Pilih Nama Siswa --</option>
-                                @foreach($siswas as $siswa)
-                                    <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{ $siswa->kelas }})</option>
+                            <select id="select-siswa-absensi" name="siswa_id" required placeholder="-- Ketik atau Pilih Nama Siswa --">
+                                <option value="">-- Ketik atau Pilih Nama Siswa --</option>
+                                @foreach($siswas->groupBy('kelas') as $namaKelas => $groupSiswa)
+                                    <optgroup label="--- {{ $namaKelas }} ---">
+                                        @foreach($groupSiswa as $siswa)
+                                            <option value="{{ $siswa->id }}">{{ $siswa->nama }} ({{ $siswa->kelas }})</option>
+                                        @endforeach
+                                    </optgroup>
                                 @endforeach
                             </select>
                         </div>
@@ -167,14 +186,18 @@
             <form action="{{ route('admin.nilai.store') }}" method="POST" class="space-y-6">
                 @csrf
 
-                <!-- Pilihan Nama Siswa & Jenis Ujian -->
+                <!-- Pilihan Nama Siswa (Bisa Ketik / Cari Nama) & Jenis Ujian -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Pilih Nama Siswa & Kelas</label>
-                        <select name="siswa_id" required class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#004d25] focus:outline-none bg-white">
-                            <option value="">-- Pilih Nama Siswa --</option>
-                            @foreach($siswas as $siswa)
-                                <option value="{{ $siswa->id }}">{{ $siswa->nama }} (Kelas: {{ $siswa->kelas }})</option>
+                        <select id="select-siswa-nilai" name="siswa_id" required placeholder="-- Ketik atau Pilih Nama Siswa --">
+                            <option value="">-- Ketik atau Pilih Nama Siswa --</option>
+                            @foreach($siswas->groupBy('kelas') as $namaKelas => $groupSiswa)
+                                <optgroup label="--- {{ $namaKelas }} ---">
+                                    @foreach($groupSiswa as $siswa)
+                                        <option value="{{ $siswa->id }}">{{ $siswa->nama }} ({{ $siswa->kelas }})</option>
+                                    @endforeach
+                                </optgroup>
                             @endforeach
                         </select>
                     </div>
@@ -221,7 +244,7 @@
                     </div>
                 </div>
 
-                <!-- DAFTAR MAPEL SMA (HIDDEN BY DEFAULT WITH DISABLED INPUTS) -->
+                <!-- DAFTAR MAPEL SMA -->
                 <div id="container-sma" class="hidden">
                     <label class="block text-xs font-bold text-gray-700 uppercase mb-3">Daftar Mata Pelajaran SMA Ziyadatul Ilmi (0 - 100)</label>
                     @php
@@ -304,8 +327,21 @@
 
     </div>
 
-    <!-- Script Switcher Mapel SMP / SMA -->
+    <!-- Script Searchable Dropdown & Switcher -->
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Searchable Dropdown untuk Absensi & Nilai
+            new TomSelect('#select-siswa-absensi', {
+                create: false,
+                sortField: { field: 'text', direction: 'asc' }
+            });
+
+            new TomSelect('#select-siswa-nilai', {
+                create: false,
+                sortField: { field: 'text', direction: 'asc' }
+            });
+        });
+
         function switchJenjang(jenjang) {
             const containerSmp = document.getElementById('container-smp');
             const containerSma = document.getElementById('container-sma');
