@@ -4,28 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Siswa extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = ['nisn', 'qr_token', 'nama', 'kelas'];
 
-    // Relasi ke Absensi
-    public function absensis()
+    protected static function booted()
     {
-        return $this->hasMany(Absensi::class, 'siswa_id');
-    }
-
-    // Relasi ke Nilai (E-Raport)
-    public function nilai()
-    {
-        return $this->hasMany(Nilai::class, 'siswa_id');
-    }
-
-    // Backup relasi jika controller kamu ada yang memanggil $siswa->nilais
-    public function nilais()
-    {
-        return $this->hasMany(Nilai::class, 'siswa_id');
+        static::creating(function ($siswa) {
+            if (empty($siswa->qr_token)) {
+                $siswa->qr_token = 'ZI-' . strtoupper(Str::random(10));
+            }
+        });
     }
 }

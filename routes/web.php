@@ -4,6 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RaportController;
 use App\Http\Controllers\NilaiController;
+use App\Http\Controllers\AbsensiQrController;
+
+// 9. Fitur Absensi QR Code (Scan & Cetak Kartu)
+Route::get('/admin/absensi/scan', [AbsensiQrController::class, 'scan'])->name('absen.scan');
+Route::post('/admin/absensi/scan', [AbsensiQrController::class, 'storeScan'])->name('absen.scan.store');
+Route::get('/admin/absensi/kartu', [AbsensiQrController::class, 'kartu'])->name('absen.kartu');
 
 /*
 |--------------------------------------------------------------------------
